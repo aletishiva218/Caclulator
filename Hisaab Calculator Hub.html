@@ -1,0 +1,1877 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=3ad3226a-2e93-4def-9b48-2a2a5eadfd58
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<!-- Google tag (gtag.js): replace G-B06RF8GF1B (both places) with your Measurement ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-B06RF8GF1B"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-B06RF8GF1B');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hisaab Calculator Hub</title>
+<meta name="google-site-verification" content="rZoROtBjkuog1QURlQhEw4EjC9gj7W1DGqzjjBJXONg" />
+<meta name="description" content="Hisaab: ten everyday Indian calculators.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Layout: a tool rail on the left, a work area on the right; every tool pairs an input column with a printed "slip" of results */
+:root {
+  --bg: #F1F3EF;
+  --surface: #FFFFFF;
+  --sunken: #E7EBE6;
+  --ink: #16211D;
+  --muted: #5B6862;
+  --line: #D4DBD5;
+  --accent: #2442C8;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E3E8FB;
+  --slip: #FDFDF8;
+  --marigold: #D98F0B;
+  --good: #166B45;
+  --good-soft: #DDF1E6;
+  --warn: #8A5507;
+  --warn-soft: #FAEDD3;
+  --bad: #B93A24;
+  --bad-soft: #F8E0DA;
+  --c-inv: #BAC4BE;
+  --shadow: 0 1px 2px rgb(20 32 26 / .06), 0 10px 28px -14px rgb(20 32 26 / .22);
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Instrument Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-num: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --r: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1412; --surface: #161E1B; --sunken: #0A0F0D; --ink: #E5ECE8; --muted: #94A29B; --line: #27332E;
+    --accent: #8FA3FF; --accent-ink: #0E1412; --accent-soft: #1D2646; --slip: #121A17; --marigold: #F2B441;
+    --good: #52C48F; --good-soft: #163327; --warn: #E6A83C; --warn-soft: #362A12; --bad: #F2806A; --bad-soft: #3A1D17;
+    --c-inv: #3A4943; --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 12px 30px -14px rgb(0 0 0 / .6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1412; --surface: #161E1B; --sunken: #0A0F0D; --ink: #E5ECE8; --muted: #94A29B; --line: #27332E;
+  --accent: #8FA3FF; --accent-ink: #0E1412; --accent-soft: #1D2646; --slip: #121A17; --marigold: #F2B441;
+  --good: #52C48F; --good-soft: #163327; --warn: #E6A83C; --warn-soft: #362A12; --bad: #F2806A; --bad-soft: #3A1D17;
+  --c-inv: #3A4943; --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 12px 30px -14px rgb(0 0 0 / .6);
+  color-scheme: dark;
+}
+
+[hidden] { display: none !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 15px/1.5 var(--f-body);
+  padding-inline: clamp(16px, 3vw, 36px);
+  padding-block: 20px 56px;
+}
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num, .mono { font-family: var(--f-num); font-variant-numeric: tabular-nums; }
+
+/* ---------- header ---------- */
+.top {
+  max-width: 1240px; margin: 0 auto 22px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.mark {
+  width: 42px; height: 42px; border-radius: 11px; background: var(--accent); color: var(--accent-ink);
+  display: grid; place-items: center; font: 800 22px/1 var(--f-display);
+  transform: rotate(-4deg);
+}
+.brand h1 { margin: 0; font: 800 26px/1 var(--f-display); letter-spacing: -.02em; }
+.brand p { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+.theme-btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
+  padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.theme-btn:hover { border-color: var(--muted); }
+
+/* ---------- shell ---------- */
+.shell {
+  max-width: 1240px; margin: 0 auto;
+  display: grid; grid-template-columns: 228px minmax(0, 1fr); gap: 28px; align-items: start;
+}
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); display: grid; gap: 18px; }
+.search {
+  width: 100%; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface);
+  padding: 0 12px; font-size: 14px;
+}
+.navlist { display: grid; gap: 18px; }
+.navgroup { display: grid; gap: 2px; }
+.navgroup h3 {
+  margin: 0 0 4px 10px; font: 600 11px/1 var(--f-num); letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+}
+.navbtn {
+  display: grid; gap: 1px; text-align: left; border: 0; background: transparent; cursor: pointer;
+  padding: 8px 10px; border-radius: 9px;
+}
+.navbtn b { font-weight: 600; font-size: 14.5px; }
+.navbtn small { color: var(--muted); font-size: 12px; }
+.navbtn:hover { background: var(--sunken); }
+.navbtn[aria-current="page"] { background: var(--ink); color: var(--bg); }
+.navbtn[aria-current="page"] small { color: inherit; opacity: .7; }
+.privacy { font-size: 12px; color: var(--muted); padding: 0 10px; line-height: 1.45; }
+
+/* ---------- footer credit ---------- */
+.credit {
+  max-width: 1240px; margin: 48px auto 0; padding-top: 20px; border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between; align-items: center; gap: 12px 24px; flex-wrap: wrap;
+}
+.credit .by { display: flex; align-items: center; gap: 12px; }
+.credit .mono-mark {
+  width: 36px; height: 36px; border-radius: 50%; flex: none; display: grid; place-items: center;
+  background: var(--accent-soft); color: var(--accent); font: 800 14px/1 var(--f-display); letter-spacing: .02em;
+}
+.credit .lbl-sm { display: block; font: 500 10.5px/1 var(--f-num); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+.credit .name { font: 700 18px/1.1 var(--f-display); letter-spacing: -.01em; color: var(--ink); }
+.credit .meta { font-size: 12.5px; color: var(--muted); margin: 0; }
+
+/* ---------- tool frame ---------- */
+.tool { display: grid; gap: 22px; min-width: 0; }
+.tool-head { display: flex; justify-content: space-between; align-items: end; gap: 12px 20px; flex-wrap: wrap; }
+.tool-head h2 { margin: 0; font: 800 clamp(26px, 3.4vw, 36px)/1.05 var(--f-display); letter-spacing: -.025em; text-wrap: balance; }
+.tool-head p { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
+.tool-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(290px, 380px); gap: 22px; align-items: start; }
+.panel {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+  padding: clamp(16px, 2.2vw, 24px); display: grid; gap: 18px; min-width: 0; align-content: start;
+}
+.panel h3 { margin: 0; font: 700 17px/1.2 var(--f-display); letter-spacing: -.01em; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+
+/* ---------- fields ---------- */
+.field { display: grid; gap: 7px; min-width: 0; }
+.field > label, .lbl { font-size: 13px; font-weight: 600; }
+.lbl-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.inwrap {
+  display: flex; align-items: center; height: 46px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface); overflow: hidden; transition: border-color .15s;
+}
+.inwrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.inwrap input, .inwrap select {
+  flex: 1; min-width: 0; height: 100%; border: 0; background: transparent; padding: 0 12px; outline: none;
+  font-family: var(--f-num); font-size: 16px; font-variant-numeric: tabular-nums;
+}
+.inwrap select { font-family: var(--f-body); font-size: 15px; cursor: pointer; }
+.inwrap .pre, .inwrap .suf { color: var(--muted); font-size: 14px; padding: 0 0 0 12px; white-space: nowrap; }
+.inwrap .suf { padding: 0 12px 0 0; }
+.inwrap .pre + input { padding-left: 6px; }
+.inwrap.sm { height: 38px; }
+.inwrap.sm input { font-size: 14px; padding: 0 8px; }
+input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="date"], input[type="month"] { font-family: var(--f-num); }
+input[type="range"] { width: 100%; accent-color: var(--accent); margin: 2px 0 0; cursor: pointer; }
+.hint { font-size: 12.5px; color: var(--muted); min-height: 1.2em; overflow-wrap: anywhere; }
+.sub, .rows dd, .ans, .note, .slip-err { overflow-wrap: anywhere; min-width: 0; }
+.check { display: flex; align-items: center; gap: 9px; font-size: 14px; cursor: pointer; }
+.check input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
+
+.seg {
+  display: inline-flex; flex-wrap: wrap; gap: 3px; padding: 3px; border-radius: 10px; background: var(--sunken);
+}
+.seg button {
+  border: 0; background: transparent; padding: 6px 12px; border-radius: 8px; font-size: 13.5px; font-weight: 600;
+  color: var(--muted); cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / .12); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px;
+  font: 500 13px var(--f-num); cursor: pointer;
+}
+.chips button:hover { border-color: var(--muted); }
+.chips button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 8px 14px;
+  font-size: 13.5px; font-weight: 600; cursor: pointer;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.icon-btn {
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface);
+  cursor: pointer; font-size: 17px; line-height: 1; color: var(--muted);
+}
+.icon-btn:hover { color: var(--bad); border-color: var(--bad); }
+.stepper { display: flex; align-items: center; gap: 0; }
+.stepper button {
+  width: 46px; height: 46px; border: 1px solid var(--line); background: var(--surface); font-size: 20px; cursor: pointer;
+}
+.stepper button:first-child { border-radius: 10px 0 0 10px; }
+.stepper button:last-child { border-radius: 0 10px 10px 0; }
+.stepper input {
+  width: 72px; height: 46px; border: 1px solid var(--line); border-inline: 0; text-align: center; background: var(--surface);
+  font: 500 17px var(--f-num); outline: none;
+}
+fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 14px; min-width: 0; }
+legend { padding: 0; margin-bottom: 12px; font: 700 15px var(--f-display); }
+.note { font-size: 12.5px; color: var(--muted); margin: 0; line-height: 1.5; }
+.err { color: var(--bad); font-size: 13px; font-weight: 600; }
+
+/* ---------- the slip (results) ---------- */
+.slip {
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px);
+  background: var(--slip); border-radius: 6px 6px 0 0; box-shadow: var(--shadow);
+  padding: 22px 22px 26px; display: grid; gap: 16px; margin-bottom: 10px;
+}
+.slip::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -9px; height: 10px;
+  background: radial-gradient(circle at 7px 0, var(--slip) 7px, transparent 7.5px) repeat-x;
+  background-size: 14px 10px;
+}
+.slip-label {
+  font: 500 11px/1 var(--f-num); letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+}
+.big {
+  font: 700 clamp(30px, 4vw, 40px)/1.05 var(--f-num); letter-spacing: -.03em; font-variant-numeric: tabular-nums;
+  word-break: break-word;
+}
+.big small { font-size: .45em; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.big.accent { color: var(--accent); }
+.sub { color: var(--muted); font-size: 13.5px; margin-top: -8px; }
+.rows { margin: 0; display: grid; }
+.rows > div {
+  display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--line);
+  font-size: 14px;
+}
+.rows > div:last-child { border-bottom: 0; }
+.rows dt { color: var(--muted); }
+.rows dd { margin: 0; font-family: var(--f-num); font-variant-numeric: tabular-nums; font-weight: 500; text-align: right; }
+.rows .total { border-top: 1.5px solid var(--ink); border-bottom: 0; margin-top: 4px; padding-top: 10px; }
+.rows .total dt, .rows .total dd { color: var(--ink); font-weight: 700; }
+.stack { display: flex; height: 12px; border-radius: 99px; overflow: hidden; background: var(--sunken); }
+.stack span { display: block; height: 100%; transition: width .35s ease; }
+.stack .a { background: var(--c-inv); }
+.stack .b { background: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend .a { background: var(--c-inv); }
+.legend .b { background: var(--accent); }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; font-size: 13px; font-weight: 700;
+  width: fit-content;
+}
+.pill.good { background: var(--good-soft); color: var(--good); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.info { background: var(--accent-soft); color: var(--accent); }
+.slip-err { margin: 0; padding: 10px 12px; border-radius: 8px; background: var(--bad-soft); color: var(--bad); font-size: 13.5px; font-weight: 600; }
+.tool[data-error] .slip > :not(.slip-err), .tool[data-error] .chart, .tool[data-error] #emi-table, .tool[data-error] .rows { opacity: .28; }
+input[aria-invalid="true"] { color: var(--bad); }
+.inwrap:has(input[aria-invalid="true"]), input.upto[aria-invalid="true"] { border-color: var(--bad); }
+.stamp { font: 500 11px var(--f-num); color: var(--muted); letter-spacing: .06em; border-top: 1px dashed var(--line); padding-top: 12px; }
+
+/* ---------- tables ---------- */
+.tablewrap { overflow: auto; max-height: 460px; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { padding: 9px 12px; text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+thead th {
+  position: sticky; top: 0; background: var(--sunken); font: 600 11.5px var(--f-num); letter-spacing: .06em;
+  text-transform: uppercase; color: var(--muted); z-index: 1;
+}
+tbody td { border-top: 1px solid var(--line); font-family: var(--f-num); font-variant-numeric: tabular-nums; }
+tbody td:first-child { font-family: var(--f-body); }
+tbody tr:hover td { background: var(--accent-soft); }
+td .per { font-size: 11.5px; color: var(--muted); display: block; }
+.sched { table-layout: fixed; min-width: 720px; }
+.sched th:first-child { width: 22%; }
+.tablewrap { contain: content; min-width: 0; max-width: 100%; }
+.minibar { display: inline-block; width: 70px; height: 6px; border-radius: 9px; background: var(--sunken); vertical-align: middle; margin-left: 8px; overflow: hidden; }
+.minibar span { display: block; height: 100%; background: var(--good); }
+
+/* ---------- charts ---------- */
+.chart svg { display: block; width: 100%; height: 250px; }
+.chart text { fill: var(--muted); font: 11px var(--f-num); }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .b-inv { fill: var(--c-inv); }
+.chart .b-gain { fill: var(--accent); }
+
+/* ---------- percentage cards ---------- */
+.qcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.qcard {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px;
+  display: grid; gap: 12px; align-content: start;
+}
+.qcard .q { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14.5px; }
+.qcard .q input {
+  width: 96px; height: 38px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg);
+  padding: 0 8px; font: 500 15px var(--f-num); outline: none;
+}
+.qcard .q input:focus { border-color: var(--accent); }
+.qcard .ans { font: 700 22px var(--f-num); color: var(--accent); font-variant-numeric: tabular-nums; word-break: break-word; }
+
+/* ---------- BMI gauge ---------- */
+.gauge { position: relative; padding-top: 16px; }
+.gauge .bands { display: flex; height: 12px; border-radius: 99px; overflow: hidden; }
+.gauge .bands span { height: 100%; }
+.gauge .marker {
+  position: absolute; top: 0; width: 0; height: 0; transform: translateX(-7px);
+  border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 11px solid var(--ink);
+  transition: left .35s ease;
+}
+.gauge .ticks { position: relative; height: 18px; margin-top: 5px; font: 11px var(--f-num); color: var(--muted); }
+.gauge .ticks span { position: absolute; transform: translateX(-50%); }
+
+/* ---------- regimes ---------- */
+.regimes { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 22px; }
+.regime.best { border-color: var(--good); box-shadow: 0 0 0 1px var(--good); }
+.slabs td, .slabs th { padding: 6px 8px; }
+.slabs td:first-child { font-family: var(--f-num); color: var(--muted); font-size: 12.5px; }
+.slabs .inwrap { min-width: 92px; }
+.slabs input.upto {
+  width: 120px; height: 38px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
+  padding: 0 8px; font: 500 14px var(--f-num); outline: none; text-align: right;
+}
+.slabs input.upto:focus { border-color: var(--accent); }
+.cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cmp > div { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: grid; gap: 4px; }
+.cmp > div.win { border-color: var(--good); background: var(--good-soft); }
+.cmp .big { font-size: clamp(20px, 2.4vw, 25px); }
+
+/* ---------- cheque ---------- */
+.cheque {
+  position: relative; border-radius: 10px; padding: 20px 22px 22px; display: grid; gap: 14px;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 9px, color-mix(in srgb, var(--accent) 6%, transparent) 9px 10px),
+    var(--slip);
+  border: 1px solid var(--line); box-shadow: var(--shadow); overflow: hidden;
+}
+.cheque .crossing {
+  position: absolute; left: 18px; top: 10px; transform: rotate(-24deg); transform-origin: left top;
+  border-block: 1.5px solid var(--muted); padding: 1px 8px; font: 600 10px var(--f-num); letter-spacing: .14em; color: var(--muted);
+  margin-top: 26px;
+}
+.cheque .datebox { justify-self: end; display: flex; gap: 3px; }
+.cheque .datebox span {
+  width: 22px; height: 28px; border: 1px solid var(--muted); display: grid; place-items: center;
+  font: 500 14px var(--f-num); background: var(--surface);
+}
+.cheque .line { display: flex; align-items: baseline; gap: 10px; border-bottom: 1px solid var(--muted); padding-bottom: 4px; min-width: 0; }
+.cheque .line b { font-size: 12px; color: var(--muted); font-weight: 600; flex: none; }
+.cheque .line span { font: italic 500 16px/1.5 var(--f-body); min-width: 0; overflow-wrap: anywhere; }
+.cheque .amt-row { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; }
+.cheque .amtbox {
+  border: 1.5px solid var(--ink); padding: 6px 12px; font: 700 18px var(--f-num); background: var(--surface);
+  font-variant-numeric: tabular-nums;
+}
+.cheque .sign { font-size: 11px; color: var(--muted); border-top: 1px solid var(--muted); padding-top: 3px; width: 150px; text-align: center; }
+.words-out { font: 600 19px/1.5 var(--f-body); overflow-wrap: anywhere; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 980px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .rail { position: static; display: block; }
+  .rail .search, .rail .privacy, .navgroup h3, .navbtn small { display: none; }
+  .navlist { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
+  .navgroup { display: contents; }
+  .navbtn { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 7px 14px; }
+  .navbtn b { font-size: 13.5px; }
+}
+@media (max-width: 860px) {
+  .tool-body { grid-template-columns: minmax(0, 1fr); }
+  .slip { position: relative; top: auto; }
+}
+@media (max-width: 480px) {
+  .slabs td, .slabs th { padding: 5px 3px; }
+  .slabs input.upto { width: 92px; font-size: 13px; padding: 0 6px; }
+  .slabs .inwrap { min-width: 64px; }
+  .slabs .inwrap.sm input { padding: 0 4px; }
+  .slabs td:first-child { font-size: 11.5px; }
+}
+@media (max-width: 370px) {
+  .slabs input.upto { width: 76px; }
+  .slabs .inwrap { min-width: 58px; }
+  .slabs td:first-child { font-size: 10.5px; }
+}
+@media (max-width: 420px) {
+  .cmp { grid-template-columns: 1fr; }
+  .regimes { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <div class="mark" aria-hidden="true">₹</div>
+    <div>
+      <h1>Hisaab</h1>
+      <p>Ten everyday calculators, worked out in Indian rupees and lakh-crore.</p>
+    </div>
+  </div>
+  <button class="theme-btn" id="theme-btn" type="button">Theme: System</button>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Calculators">
+    <input class="search" id="tool-search" type="search" placeholder="Find a calculator  ( / )" aria-label="Find a calculator">
+    <div class="navlist">
+      <div class="navgroup">
+        <h3>Money</h3>
+        <button class="navbtn" data-tool="emi" data-k="emi loan home car amortization"><b>EMI &amp; loan</b><small>Monthly instalment, schedule</small></button>
+        <button class="navbtn" data-tool="sip" data-k="sip fd mutual fund fixed deposit returns invest"><b>SIP &amp; FD</b><small>Maturity and growth</small></button>
+        <button class="navbtn" data-tool="tax" data-k="income tax regime old new slab salary"><b>Income tax</b><small>Old vs new regime</small></button>
+        <button class="navbtn" data-tool="gst" data-k="gst cgst sgst igst invoice"><b>GST</b><small>Add or remove GST</small></button>
+      </div>
+      <div class="navgroup">
+        <h3>Everyday</h3>
+        <button class="navbtn" data-tool="pct" data-k="percentage percent discount sale offer"><b>Percent &amp; discount</b><small>Sale price, % change</small></button>
+        <button class="navbtn" data-tool="tip" data-k="tip bill split restaurant share"><b>Tip &amp; bill split</b><small>Share a bill fairly</small></button>
+        <button class="navbtn" data-tool="words" data-k="number words cheque lakh crore rupees"><b>Amount in words</b><small>For cheques, lakh-crore</small></button>
+      </div>
+      <div class="navgroup">
+        <h3>Measure</h3>
+        <button class="navbtn" data-tool="age" data-k="age date difference days birthday"><b>Age &amp; dates</b><small>Age, gaps, add days</small></button>
+        <button class="navbtn" data-tool="unit" data-k="unit convert length weight temperature area acre gaj"><b>Unit converter</b><small>Length, weight, temp, area</small></button>
+        <button class="navbtn" data-tool="bmi" data-k="bmi body mass weight health"><b>BMI</b><small>Body mass index</small></button>
+      </div>
+    </div>
+    <p class="privacy">Everything is calculated on this page. Nothing you type is sent anywhere. We use Google Analytics to count visits.</p>
+  </nav>
+
+  <main>
+
+<!-- ======================= EMI ======================= -->
+<section class="tool" id="t-emi" data-tool="emi" hidden>
+  <div class="tool-head">
+    <div>
+      <h2>EMI &amp; loan calculator</h2>
+      <p>Monthly instalment for a home, car or personal loan, with a full repayment schedule.</p>
+    </div>
+  </div>
+  <div class="tool-body">
+    <div class="panel">
+      <div class="field">
+        <label for="emi-p">Loan amount</label>
+        <div class="inwrap"><span class="pre">₹</span><input id="emi-p" type="number" inputmode="decimal" min="0" max="1000000000000" step="10000" value="3500000"></div>
+        <input type="range" id="emi-p-r" data-link="emi-p" min="50000" max="20000000" step="50000" value="3500000" aria-label="Loan amount slider">
+        <div class="hint" data-hint-for="emi-p"></div>
+      </div>
+      <div class="field">
+        <label for="emi-r">Interest rate (per year)</label>
+        <div class="inwrap"><input id="emi-r" type="number" inputmode="decimal" min="0" max="50" step="0.05" value="8.5"><span class="suf">% p.a.</span></div>
+        <input type="range" id="emi-r-r" data-link="emi-r" min="1" max="24" step="0.05" value="8.5" aria-label="Interest rate slider">
+      </div>
+      <div class="field">
+        <div class="lbl-row">
+          <label class="lbl" for="emi-n">Tenure</label>
+          <div class="seg" data-name="emi-unit"><button type="button" data-v="y" aria-pressed="true">Years</button><button type="button" data-v="m" aria-pressed="false">Months</button></div>
+        </div>
+        <div class="inwrap"><input id="emi-n" type="number" inputmode="numeric" min="1" max="50" step="1" value="20"><span class="suf" id="emi-n-suf">years</span></div>
+        <input type="range" id="emi-n-r" data-link="emi-n" min="1" max="30" step="1" value="20" aria-label="Tenure slider">
+      </div>
+      <div class="field">
+        <label for="emi-start">First EMI month</label>
+        <div class="inwrap"><input id="emi-start" type="month"></div>
+      </div>
+    </div>
+    <aside class="slip" aria-live="polite">
+      <div class="slip-label">Monthly EMI</div>
+      <div class="big accent" id="emi-out">—</div>
+      <div class="sub" id="emi-sub"></div>
+      <div class="stack"><span class="a" id="emi-bar-p"></span><span class="b" id="emi-bar-i"></span></div>
+      <div class="legend"><span><i class="a"></i>Principal</span><span><i class="b"></i>Interest</span></div>
+      <dl class="rows">
+        <div><dt>Principal</dt><dd id="emi-o-p">—</dd></div>
+        <div><dt>Total interest</dt><dd id="emi-o-i">—</dd></div>
+        <div><dt>Interest as % of loan</dt><dd id="emi-o-ip">—</dd></div>
+        <div class="total"><dt>Total amount payable</dt><dd id="emi-o-t">—</dd></div>
+      </dl>
+      <div class="stamp" id="emi-stamp"></div>
+    </aside>
+  </div>
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Amortization schedule</h3>
+      <div class="seg" data-name="emi-view"><button type="button" data-v="y" aria-pressed="true">Yearly</button><button type="button" data-v="m" aria-pressed="false">Monthly</button></div>
+    </div>
+    <div class="tablewrap">
+      <table class="sched">
+        <thead><tr><th id="emi-th-period">Year</th><th>Principal</th><th>Interest</th><th>Total paid</th><th>Balance</th><th>Loan paid</th></tr></thead>
+        <tbody id="emi-table"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= SIP / FD ======================= -->
+<section class="tool" id="t-sip" data-tool="sip" hidden>
+  <div class="tool-head">
+    <div>
+      <h2>SIP &amp; FD returns</h2>
+      <p>See what a monthly SIP or a fixed deposit grows into, year by year.</p>
+    </div>
+    <div class="seg" data-name="sip-mode"><button type="button" data-v="sip" aria-pressed="true">SIP</button><button type="button" data-v="lump" aria-pressed="false">Lumpsum</button><button type="button" data-v="fd" aria-pressed="false">Fixed deposit</button></div>
+  </div>
+  <div class="tool-body">
+    <div class="panel">
+      <div class="field">
+        <label for="sip-amt" id="sip-amt-lbl">Monthly investment</label>
+        <div class="inwrap"><span class="pre">₹</span><input id="sip-amt" type="number" inputmode="decimal" min="0" max="1000000000000" step="500" value="10000"></div>
+        <input type="range" id="sip-amt-r" data-link="sip-amt" min="500" max="200000" step="500" value="10000" aria-label="Amount slider">
+        <div class="hint" data-hint-for="sip-amt"></div>
+      </div>
+      <div class="field">
+        <label for="sip-rate" id="sip-rate-lbl">Expected return (per year)</label>
+        <div class="inwrap"><input id="sip-rate" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="12"><span class="suf">% p.a.</span></div>
+        <input type="range" id="sip-rate-r" data-link="sip-rate" min="1" max="30" step="0.1" value="12" aria-label="Return rate slider">
+      </div>
+      <div class="field">
+        <label for="sip-yrs">Time period</label>
+        <div class="inwrap"><input id="sip-yrs" type="number" inputmode="numeric" min="1" max="60" step="1" value="15"><span class="suf">years</span></div>
+        <input type="range" id="sip-yrs-r" data-link="sip-yrs" min="1" max="40" step="1" value="15" aria-label="Years slider">
+      </div>
+      <div class="field" id="sip-step-f">
+        <label for="sip-step">Annual step-up</label>
+        <div class="inwrap"><input id="sip-step" type="number" inputmode="decimal" min="0" max="100" step="1" value="0"><span class="suf">% each year</span></div>
+        <div class="hint">Raise your SIP by this much every year, the way a salary rises. Leave at 0 for a flat SIP.</div>
+      </div>
+      <div class="field" id="sip-comp-f" hidden>
+        <span class="lbl">Interest compounded</span>
+        <div class="seg" data-name="fd-comp"><button type="button" data-v="12" aria-pressed="false">Monthly</button><button type="button" data-v="4" aria-pressed="true">Quarterly</button><button type="button" data-v="2" aria-pressed="false">Half-yearly</button><button type="button" data-v="1" aria-pressed="false">Yearly</button></div>
+        <div class="hint">Most Indian banks compound FD interest quarterly.</div>
+      </div>
+    </div>
+    <aside class="slip" aria-live="polite">
+      <div class="slip-label" id="sip-out-lbl">Maturity value</div>
+      <div class="big accent" id="sip-out">—</div>
+      <div class="sub" id="sip-sub"></div>
+      <div class="stack"><span class="a" id="sip-bar-a"></span><span class="b" id="sip-bar-b"></span></div>
+      <div class="legend"><span><i class="a"></i>Invested</span><span><i class="b"></i>Returns</span></div>
+      <dl class="rows">
+        <div><dt>Total invested</dt><dd id="sip-o-inv">—</dd></div>
+        <div><dt>Estimated returns</dt><dd id="sip-o-ret">—</dd></div>
+        <div><dt>Wealth gained</dt><dd id="sip-o-x">—</dd></div>
+        <div class="total"><dt>Maturity value</dt><dd id="sip-o-tot">—</dd></div>
+      </dl>
+      <p class="note" id="sip-note">Market returns are not guaranteed. This assumes a steady return every year.</p>
+    </aside>
+  </div>
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Growth, year by year</h3>
+      <div class="legend"><span><i class="a"></i>Invested</span><span><i class="b"></i>Returns</span></div>
+    </div>
+    <div class="chart" id="sip-chart"></div>
+  </div>
+</section>
+
+<!-- ======================= INCOME TAX ======================= -->
+<section class="tool" id="t-tax" data-tool="tax" hidden>
+  <div class="tool-head">
+    <div>
+      <h2>Income tax: old vs new regime</h2>
+      <p>Enter your yearly income and deductions to see which regime leaves you more. Every slab, rebate and deduction limit below can be edited.</p>
+    </div>
+    <button class="btn" type="button" id="tax-reset">Reset slabs to presets</button>
+  </div>
+  <div class="tool-body">
+    <div class="panel">
+      <div class="grid2">
+        <div class="field">
+          <label for="tax-sal">Gross salary (per year)</label>
+          <div class="inwrap"><span class="pre">₹</span><input id="tax-sal" type="number" inputmode="decimal" min="0" max="10000000000000" step="10000" value="1800000"></div>
+          <div class="hint" data-hint-for="tax-sal"></div>
+        </div>
+        <div class="field">
+          <label for="tax-oth">Other income</label>
+          <div class="inwrap"><span class="pre">₹</span><input id="tax-oth" type="number" inputmode="decimal" min="0" max="10000000000000" step="1000" value="40000"></div>
+          <div class="hint">FD interest, rent, freelance and so on.</div>
+        </div>
+      </div>
+      <div class="grid2">
+        <label class="check"><input type="checkbox" id="tax-salaried" checked> Salaried or pensioner (standard deduction)</label>
+        <div class="field">
+          <span class="lbl">Your age (affects old regime)</span>
+          <div class="seg" data-name="tax-age"><button type="button" data-v="a" aria-pressed="true">Below 60</button><button type="button" data-v="b" aria-pressed="false">60–79</button><button type="button" data-v="c" aria-pressed="false">80+</button></div>
+        </div>
+      </div>
+      <fieldset>
+        <legend>Deductions in the old regime</legend>
+        <div class="grid3">
+          <div class="field"><label for="tax-80c">80C <span class="note">(PF, ELSS, LIC; max 1.5 L)</span></label><div class="inwrap"><span class="pre">₹</span><input id="tax-80c" type="number" min="0" max="10000000000000" step="1000" value="150000"></div></div>
+          <div class="field"><label for="tax-80d">80D <span class="note">(health insurance)</span></label><div class="inwrap"><span class="pre">₹</span><input id="tax-80d" type="number" min="0" max="10000000000000" step="1000" value="25000"></div></div>
+          <div class="field"><label for="tax-hra">HRA exemption</label><div class="inwrap"><span class="pre">₹</span><input id="tax-hra" type="number" min="0" max="10000000000000" step="1000" value="120000"></div></div>
+          <div class="field"><label for="tax-hl">Home loan interest <span class="note">(24b; max 2 L)</span></label><div class="inwrap"><span class="pre">₹</span><input id="tax-hl" type="number" min="0" max="10000000000000" step="1000" value="0"></div></div>
+          <div class="field"><label for="tax-nps">NPS 80CCD(1B) <span class="note">(max 50k)</span></label><div class="inwrap"><span class="pre">₹</span><input id="tax-nps" type="number" min="0" max="10000000000000" step="1000" value="0"></div></div>
+          <div class="field"><label for="tax-od">Other deductions</label><div class="inwrap"><span class="pre">₹</span><input id="tax-od" type="number" min="0" max="10000000000000" step="1000" value="0"></div></div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Allowed in the new regime</legend>
+        <div class="grid3">
+          <div class="field"><label for="tax-enps">Employer NPS 80CCD(2)</label><div class="inwrap"><span class="pre">₹</span><input id="tax-enps" type="number" min="0" max="10000000000000" step="1000" value="0"></div></div>
+        </div>
+      </fieldset>
+    </div>
+    <aside class="slip" aria-live="polite">
+      <div class="slip-label">Tax payable for the year</div>
+      <div class="cmp">
+        <div id="tax-cmp-old"><span class="slip-label">Old regime</span><span class="big" id="tax-o-old">—</span><span class="note" id="tax-o-old-eff"></span></div>
+        <div id="tax-cmp-new"><span class="slip-label">New regime</span><span class="big" id="tax-o-new">—</span><span class="note" id="tax-o-new-eff"></span></div>
+      </div>
+      <div id="tax-verdict"></div>
+      <dl class="rows">
+        <div><dt>Gross income</dt><dd id="tax-o-gross">—</dd></div>
+        <div><dt>Monthly tax (better regime)</dt><dd id="tax-o-month">—</dd></div>
+        <div class="total"><dt>In hand after tax / year</dt><dd id="tax-o-inhand">—</dd></div>
+      </dl>
+      <p class="note">An estimate for individuals. Includes 87A rebate, surcharge with marginal relief and 4% health &amp; education cess. Special-rate income such as capital gains is not covered.</p>
+    </aside>
+  </div>
+  <div class="regimes">
+    <div class="panel regime" id="reg-old">
+      <div class="panel-head"><h3>Old regime</h3><span class="pill info" id="reg-old-tot">—</span></div>
+      <div class="tablewrap" style="max-height:none">
+        <table class="slabs">
+          <thead><tr><th>From</th><th>Up to</th><th>Rate</th><th><span class="sr">Remove</span></th></tr></thead>
+          <tbody id="slabs-old"></tbody>
+        </table>
+      </div>
+      <div><button class="btn" type="button" data-addslab="old">+ Add slab</button></div>
+      <div class="err" id="slab-err-old" hidden></div>
+      <div class="grid3">
+        <div class="field"><label for="cfg-old-std">Standard deduction</label><div class="inwrap sm"><span class="pre">₹</span><input id="cfg-old-std" max="10000000000000" data-cfg="old.std" type="number" min="0" step="1000"></div></div>
+        <div class="field"><label for="cfg-old-rl">87A: income up to</label><div class="inwrap sm"><span class="pre">₹</span><input id="cfg-old-rl" max="10000000000000" data-cfg="old.rebateLimit" type="number" min="0" step="10000"></div></div>
+        <div class="field"><label for="cfg-old-rm">87A: max rebate</label><div class="inwrap sm"><span class="pre">₹</span><input id="cfg-old-rm" max="10000000000000" data-cfg="old.rebateMax" type="number" min="0" step="500"></div></div>
+      </div>
+      <dl class="rows" id="calc-old"></dl>
+    </div>
+    <div class="panel regime" id="reg-new">
+      <div class="panel-head"><h3>New regime</h3><span class="pill info" id="reg-new-tot">—</span></div>
+      <div class="tablewrap" style="max-height:none">
+        <table class="slabs">
+          <thead><tr><th>From</th><th>Up to</th><th>Rate</th><th><span class="sr">Remove</span></th></tr></thead>
+          <tbody id="slabs-new"></tbody>
+        </table>
+      </div>
+      <div><button class="btn" type="button" data-addslab="new">+ Add slab</button></div>
+      <div class="err" id="slab-err-new" hidden></div>
+      <div class="grid3">
+        <div class="field"><label for="cfg-new-std">Standard deduction</label><div class="inwrap sm"><span class="pre">₹</span><input id="cfg-new-std" max="10000000000000" data-cfg="new.std" type="number" min="0" step="1000"></div></div>
+        <div class="field"><label for="cfg-new-rl">87A: income up to</label><div class="inwrap sm"><span class="pre">₹</span><input id="cfg-new-rl" max="10000000000000" data-cfg="new.rebateLimit" type="number" min="0" step="10000"></div></div>
+        <div class="field"><label for="cfg-new-rm">87A: max rebate</label><div class="inwrap sm"><span class="pre">₹</span><input id="cfg-new-rm" max="10000000000000" data-cfg="new.rebateMax" type="number" min="0" step="500"></div></div>
+      </div>
+      <label class="check"><input type="checkbox" id="cfg-new-mr" data-cfg="new.marginal"> Marginal relief just above the rebate limit</label>
+      <dl class="rows" id="calc-new"></dl>
+    </div>
+  </div>
+  <p class="note">Presets follow the slabs announced in Budget 2025 (new regime: nil up to ₹4 L, 30% above ₹24 L, rebate up to ₹12 L taxable). Tax rules change each Budget, so check the current slabs and edit the tables if they differ. Your edits are remembered in this browser.</p>
+</section>
+
+<!-- ======================= GST ======================= -->
+<section class="tool" id="t-gst" data-tool="gst" hidden>
+  <div class="tool-head">
+    <div>
+      <h2>GST calculator</h2>
+      <p>Add GST to a base price, or pull GST out of a price that already includes it.</p>
+    </div>
+  </div>
+  <div class="tool-body">
+    <div class="panel">
+      <div class="field">
+        <span class="lbl">What do you have?</span>
+        <div class="seg" data-name="gst-mode"><button type="button" data-v="add" aria-pressed="true">Price before GST (add GST)</button><button type="button" data-v="rem" aria-pressed="false">Price with GST (remove GST)</button></div>
+      </div>
+      <div class="field">
+        <label for="gst-amt" id="gst-amt-lbl">Amount before GST</label>
+        <div class="inwrap"><span class="pre">₹</span><input id="gst-amt" type="number" inputmode="decimal" min="0" max="10000000000000" step="1" value="25000"></div>
+        <div class="hint" data-hint-for="gst-amt"></div>
+      </div>
+      <div class="field">
+        <label for="gst-rate">GST rate</label>
+        <div class="chips" data-for="gst-rate">
+          <button type="button" data-v="0.25">0.25%</button><button type="button" data-v="3">3%</button><button type="button" data-v="5">5%</button><button type="button" data-v="12">12%</button><button type="button" data-v="18">18%</button><button type="button" data-v="28">28%</button><button type="button" data-v="40">40%</button>
+        </div>
+        <div class="inwrap"><input id="gst-rate" type="number" inputmode="decimal" min="0" max="100" step="0.25" value="18"><span class="suf">%</span></div>
+        <div class="hint">Since 22 Sept 2025 most goods and services fall in the 5% or 18% slab, with 40% for luxury and sin goods. 12% and 28% are kept for older invoices.</div>
+      </div>
+      <div class="field">
+        <span class="lbl">Type of supply</span>
+        <div class="seg" data-name="gst-sup"><button type="button" data-v="intra" aria-pressed="true">Within the state (CGST + SGST)</button><button type="button" data-v="inter" aria-pressed="false">Between states (IGST)</button></div>
+      </div>
+    </div>
+    <aside class="slip" aria-live="polite">
+      <div class="slip-label" id="gst-out-lbl">Total with GST</div>
+      <div class="big accent" id="gst-out">—</div>
+      <div class="sub" id="gst-sub"></div>
+      <dl class="rows">
+        <div><dt>Taxable value</dt><dd id="gst-o-net">—</dd></div>
+        <div id="gst-r-c"><dt id="gst-l-c">CGST</dt><dd id="gst-o-c">—</dd></div>
+        <div id="gst-r-s"><dt id="gst-l-s">SGST</dt><dd id="gst-o-s">—</dd></div>
+        <div id="gst-r-i" hidden><dt id="gst-l-i">IGST</dt><dd id="gst-o-i">—</dd></div>
+        <div><dt>Total GST</dt><dd id="gst-o-tax">—</dd></div>
+        <div class="total"><dt>Invoice total</dt><dd id="gst-o-gross">—</dd></div>
+      </dl>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================= PERCENT & DISCOUNT ======================= -->
+<section class="tool" id="t-pct" data-tool="pct" hidden>
+  <div class="tool-head">
+    <div>
+      <h2>Percentage &amp; discount</h2>
+      <p>Work out a sale price, including "extra 10% off" deals, plus the everyday percentage questions.</p>
+    </div>
+  </div>
+  <div class="tool-body">
+    <div class="panel">
+      <h3>Discount</h3>
+      <div class="field">
+        <label for="dis-mrp">Original price (MRP)</label>
+        <div class="inwrap"><span class="pre">₹</span><input id="dis-mrp" type="number" inputmode="decimal" min="0" max="10000000000000" step="1" value="4999"></div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="dis-p1">Discount</label>
+          <div class="inwrap"><input id="dis-p1" type="number" inputmode="decimal" min="0" max="100" step="1" value="40"><span class="suf">% off</span></div>
+          <div class="chips" data-for="dis-p1"><button type="button" data-v="10">10</button><button type="button" data-v="20">20</button><button type="button" data-v="30">30</button><button type="button" data-v="40">40</button><button type="button" data-v="50">50</button><button type="button" data-v="70">70</button></div>
+        </div>
+        <div class="field">
+          <label for="dis-p2">Extra discount on top</label>
+          <div class="inwrap"><input id="dis-p2" type="number" inputmode="decimal" min="0" max="100" step="1" value="10"><span class="suf">% off</span></div>
+          <div class="hint">Applied after the first discount, the way bank-card offers work.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="dis-tax">Tax added after discount (optional)</label>
+        <div class="inwrap"><input id="dis-tax" type="number" inputmode="decimal" min="0" max="100" step="1" value="0"><span class="suf">%</span></div>
+      </div>
+    </div>
+    <aside class="slip" aria-live="polite">
+      <div class="slip-label">You pay</div>
+      <div class="big accent" id="dis-out">—</div>
+      <div class="sub" id="dis-sub"></div>
+      <dl class="rows">
+        <div><dt>Original price</dt><dd id="dis-o-mrp">—</dd></div>
+        <div><dt>After first discount</dt><dd id="dis-o-1">—</dd></div>
+        <div><dt>After extra discount</dt><dd id="dis-o-2">—</dd></div>
+        <div><dt>Tax</dt><dd id="dis-o-tax">—</dd></div>
+        <div><dt>You save</dt><dd id="dis-o-save">—</dd></div>
+        <div class="total"><dt>Effective discount</dt><dd id="dis-o-eff">—</dd></div>
+      </dl>
+    </aside>
+  </div>
+  <div class="qcards">
+    <div class="qcard">
+      <span class="slip-label">Percent of a number</span>
+      <div class="q">What is <input id="q1-a" type="number" min="-1000000000000000" max="1000000000000000" value="15" aria-label="Percent"> % of <input id="q1-b" type="number" min="-1000000000000000" max="1000000000000000" value="2400" aria-label="Number">?</div>
+      <div class="ans" id="q1-o">—</div>
+    </div>
+    <div class="qcard">
+      <span class="slip-label">What percent</span>
+      <div class="q"><input id="q2-a" type="number" min="-1000000000000000" max="1000000000000000" value="450" aria-label="Part"> is what % of <input id="q2-b" type="number" min="-1000000000000000" max="1000000000000000" value="1800" aria-label="Whole">?</div>
+      <div class="ans" id="q2-o">—</div>
+    </div>
+    <div class="qcard">
+      <span class="slip-label">Percent change</span>
+      <div class="q">From <input id="q3-a" type="number" min="-1000000000000000" max="1000000000000000" value="32000" aria-label="Old value"> to <input id="q3-b" type="number" min="-1000000000000000" max="1000000000000000" value="38500" aria-label="New value"></div>
+      <div class="ans" id="q3-o">—</div>
+    </div>
+    <div class="qcard">
+      <span class="slip-label">Increase or decrease by %</span>
+      <div class="q"><input id="q4-a" type="number" min="-1000000000000000" max="1000000000000000" value="1200" aria-label="Number"> changed by <input id="q4-b" type="number" min="-1000000000000000" max="1000000000000000" value="12" aria-label="Percent"> %</div>
+      <div class="ans" id="q4-o">—</div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= TIP & SPLIT ======================= -->
+<section class="tool" id="t-tip" data-tool="tip" hidden>
+  <div class="tool-head">
+    <div>
+      <h2>Tip &amp; bill splitter</h2>
+      <p>Add a tip, split the bill between friends and round each share to a clean figure.</p>
+    </div>
+  </div>
+  <div class="tool-body">
+    <div class="panel">
+      <div class="field">
+        <label for="tip-bill">Bill amount</label>
+        <div class="inwrap"><span class="pre">₹</span><input id="tip-bill" type="number" inputmode="decimal" min="0" max="10000000000" step="1" value="3480"></div>
+      </div>
+      <div class="field">
+        <label for="tip-pct">Tip</label>
+        <div class="chips" data-for="tip-pct"><button type="button" data-v="0">None</button><button type="button" data-v="5">5%</button><button type="button" data-v="10">10%</button><button type="button" data-v="15">15%</button><button type="button" data-v="20">20%</button></div>
+        <div class="inwrap"><input id="tip-pct" type="number" inputmode="decimal" min="0" max="100" step="1" value="10"><span class="suf">%</span></div>
+        <div class="hint">Check the bill first: many restaurants already add a service charge.</div>
+      </div>
+      <div class="field">
+        <label for="tip-n">Number of people</label>
+        <div class="stepper">
+          <button type="button" data-step="-1" data-target="tip-n" aria-label="One person fewer">−</button>
+          <input id="tip-n" type="number" inputmode="numeric" min="1" max="1000" step="1" value="4">
+          <button type="button" data-step="1" data-target="tip-n" aria-label="One person more">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl">Round each share up to</span>
+        <div class="seg" data-name="tip-round"><button type="button" data-v="0" aria-pressed="false">No rounding</button><button type="button" data-v="1" aria-pressed="false">₹1</button><button type="button" data-v="10" aria-pressed="true">₹10</button><button type="button" data-v="50" aria-pressed="false">₹50</button></div>
+      </div>
+    </div>
+    <aside class="slip" aria-live="polite">
+      <div class="slip-label">Each person pays</div>
+      <div class="big accent" id="tip-out">—</div>
+      <div class="sub" id="tip-sub"></div>
+      <dl class="rows">
+        <div><dt>Bill</dt><dd id="tip-o-bill">—</dd></div>
+        <div><dt>Tip</dt><dd id="tip-o-tip">—</dd></div>
+        <div><dt>Total</dt><dd id="tip-o-tot">—</dd></div>
+        <div><dt>Exact share</dt><dd id="tip-o-exact">—</dd></div>
+        <div><dt>Extra from rounding</dt><dd id="tip-o-extra">—</dd></div>
+        <div class="total"><dt>Collected</dt><dd id="tip-o-coll">—</dd></div>
+      </dl>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================= WORDS ======================= -->
+<section class="tool" id="t-words" data-tool="words" hidden>
+  <div class="tool-head">
+    <div>
+      <h2>Amount in words</h2>
+      <p>Write any amount in words in the Indian system (lakh, crore), ready for a cheque or invoice.</p>
+    </div>
+  </div>
+  <div class="tool-body">
+    <div class="panel">
+      <div class="field">
+        <label for="w-in">Amount</label>
+        <div class="inwrap"><span class="pre">₹</span><input id="w-in" type="text" inputmode="decimal" autocomplete="off" value="1,25,450.50"></div>
+        <div class="hint" id="w-hint">Up to 15 digits, with paise after the decimal point.</div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <span class="lbl">Style</span>
+          <div class="seg" data-name="w-style"><button type="button" data-v="cheque" aria-pressed="true">Rupees … Only</button><button type="button" data-v="plain" aria-pressed="false">Plain number</button></div>
+        </div>
+        <div class="field">
+          <span class="lbl">Case</span>
+          <div class="seg" data-name="w-case"><button type="button" data-v="title" aria-pressed="true">Title Case</button><button type="button" data-v="upper" aria-pressed="false">UPPER</button><button type="button" data-v="lower" aria-pressed="false">lower</button></div>
+        </div>
+      </div>
+      <div class="cheque" aria-label="Cheque preview">
+        <span class="crossing">A/C PAYEE</span>
+        <div class="datebox" id="w-date" aria-label="Date"></div>
+        <div class="line"><b>PAY</b><span>&nbsp;</span></div>
+        <div class="line"><b>RUPEES</b><span id="w-cheque">—</span></div>
+        <div class="amt-row">
+          <div class="amtbox" id="w-box">₹ —</div>
+          <div class="sign">Signature</div>
+        </div>
+      </div>
+    </div>
+    <aside class="slip" aria-live="polite">
+      <div class="slip-label">In words (Indian system)</div>
+      <div class="words-out" id="w-out">—</div>
+      <div><button class="btn primary" type="button" id="w-copy">Copy words</button> <span class="note" id="w-copied" aria-live="polite"></span></div>
+      <dl class="rows">
+        <div><dt>Indian format</dt><dd id="w-o-in">—</dd></div>
+        <div><dt>International format</dt><dd id="w-o-intl">—</dd></div>
+      </dl>
+      <div>
+        <div class="slip-label">International system</div>
+        <p class="note" id="w-o-intlw" style="margin-top:6px">—</p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================= AGE & DATES ======================= -->
+<section class="tool" id="t-age" data-tool="age" hidden>
+  <div class="tool-head">
+    <div>
+      <h2>Age &amp; date calculator</h2>
+      <p>Exact age, the gap between two dates, or a date some days, months or years away.</p>
+    </div>
+    <div class="seg" data-name="age-mode"><button type="button" data-v="age" aria-pressed="true">Age</button><button type="button" data-v="diff" aria-pressed="false">Date difference</button><button type="button" data-v="add" aria-pressed="false">Add or subtract</button></div>
+  </div>
+  <div class="tool-body">
+    <div class="panel">
+      <div id="age-in-age" class="grid2">
+        <div class="field"><label for="age-dob">Date of birth</label><div class="inwrap"><input id="age-dob" type="date" value="1996-08-15"></div></div>
+        <div class="field"><label for="age-on">Age on</label><div class="inwrap"><input id="age-on" type="date"></div></div>
+      </div>
+      <div id="age-in-diff" class="grid2" hidden>
+        <div class="field"><label for="dd-a">From</label><div class="inwrap"><input id="dd-a" type="date"></div></div>
+        <div class="field"><label for="dd-b">To</label><div class="inwrap"><input id="dd-b" type="date" value="2026-12-31"></div></div>
+        <label class="check"><input type="checkbox" id="dd-inc"> Count the end date too</label>
+      </div>
+      <div id="age-in-add" hidden>
+        <div class="grid2">
+          <div class="field"><label for="ad-d">Start date</label><div class="inwrap"><input id="ad-d" type="date"></div></div>
+          <div class="field"><span class="lbl">Operation</span><div class="seg" data-name="ad-op"><button type="button" data-v="1" aria-pressed="true">Add</button><button type="button" data-v="-1" aria-pressed="false">Subtract</button></div></div>
+        </div>
+        <div class="grid3" style="margin-top:16px">
+          <div class="field"><label for="ad-y">Years</label><div class="inwrap"><input id="ad-y" type="number" min="0" max="9999" step="1" value="0"></div></div>
+          <div class="field"><label for="ad-m">Months</label><div class="inwrap"><input id="ad-m" type="number" min="0" max="99999" step="1" value="0"></div></div>
+          <div class="field"><label for="ad-w">Weeks</label><div class="inwrap"><input id="ad-w" type="number" min="0" max="499999" step="1" value="0"></div></div>
+          <div class="field"><label for="ad-dd">Days</label><div class="inwrap"><input id="ad-dd" type="number" min="0" max="3650000" step="1" value="90"></div></div>
+        </div>
+      </div>
+    </div>
+    <aside class="slip" aria-live="polite">
+      <div class="slip-label" id="age-out-lbl">Age</div>
+      <div class="big accent" id="age-out">—</div>
+      <div class="sub" id="age-sub"></div>
+      <dl class="rows" id="age-rows"></dl>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================= UNITS ======================= -->
+<section class="tool" id="t-unit" data-tool="unit" hidden>
+  <div class="tool-head">
+    <div>
+      <h2>Unit converter</h2>
+      <p>Length, weight, temperature and area, including Indian land and gold units like gaj, guntha, cent and tola.</p>
+    </div>
+    <div class="seg" data-name="u-cat"><button type="button" data-v="length" aria-pressed="true">Length</button><button type="button" data-v="weight" aria-pressed="false">Weight</button><button type="button" data-v="temp" aria-pressed="false">Temperature</button><button type="button" data-v="area" aria-pressed="false">Area</button></div>
+  </div>
+  <div class="tool-body">
+    <div class="panel">
+      <div class="field">
+        <label for="u-val">Value</label>
+        <div class="inwrap"><input id="u-val" type="number" inputmode="decimal" step="any" min="-1000000000000000" max="1000000000000000" value="5.75"></div>
+      </div>
+      <div class="grid2" style="align-items:end">
+        <div class="field"><label for="u-from">From</label><div class="inwrap"><select id="u-from"></select></div></div>
+        <div class="field"><label for="u-to">To</label><div class="inwrap"><select id="u-to"></select></div></div>
+      </div>
+      <div><button class="btn" type="button" id="u-swap">⇅ Swap units</button></div>
+      <div class="tablewrap" style="max-height:none">
+        <table>
+          <thead><tr><th>Unit</th><th>Value</th></tr></thead>
+          <tbody id="u-all"></tbody>
+        </table>
+      </div>
+    </div>
+    <aside class="slip" aria-live="polite">
+      <div class="slip-label">Result</div>
+      <div class="big accent" id="u-out">—</div>
+      <div class="sub" id="u-sub"></div>
+      <dl class="rows"><div><dt>Formula</dt><dd id="u-formula">—</dd></div></dl>
+      <p class="note" id="u-note"></p>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================= BMI ======================= -->
+<section class="tool" id="t-bmi" data-tool="bmi" hidden>
+  <div class="tool-head">
+    <div>
+      <h2>BMI calculator</h2>
+      <p>Body mass index with both the WHO scale and the lower Asia-Pacific cut-offs used for Indian adults.</p>
+    </div>
+    <div class="seg" data-name="bmi-unit"><button type="button" data-v="m" aria-pressed="true">cm / kg</button><button type="button" data-v="i" aria-pressed="false">ft·in / lb</button></div>
+  </div>
+  <div class="tool-body">
+    <div class="panel">
+      <div id="bmi-metric" class="grid2">
+        <div class="field"><label for="bmi-cm">Height</label><div class="inwrap"><input id="bmi-cm" type="number" inputmode="decimal" min="50" max="260" step="0.5" value="172"><span class="suf">cm</span></div></div>
+        <div class="field"><label for="bmi-kg">Weight</label><div class="inwrap"><input id="bmi-kg" type="number" inputmode="decimal" min="10" max="400" step="0.1" value="74"><span class="suf">kg</span></div></div>
+      </div>
+      <div id="bmi-imp" class="grid3" hidden>
+        <div class="field"><label for="bmi-ft">Height (feet)</label><div class="inwrap"><input id="bmi-ft" type="number" min="1" max="8" step="1" value="5"><span class="suf">ft</span></div></div>
+        <div class="field"><label for="bmi-in">Inches</label><div class="inwrap"><input id="bmi-in" type="number" min="0" max="11.99" step="0.5" value="8"><span class="suf">in</span></div></div>
+        <div class="field"><label for="bmi-lb">Weight</label><div class="inwrap"><input id="bmi-lb" type="number" min="20" max="900" step="0.5" value="163"><span class="suf">lb</span></div></div>
+      </div>
+      <div class="field">
+        <span class="lbl">Scale</span>
+        <div class="seg" data-name="bmi-scale"><button type="button" data-v="asia" aria-pressed="true">Asia-Pacific (India)</button><button type="button" data-v="who" aria-pressed="false">WHO international</button></div>
+        <div class="hint">South Asians tend to carry more health risk at a lower BMI, so the Asia-Pacific scale treats 23 and above as overweight.</div>
+      </div>
+      <div class="gauge" aria-hidden="true">
+        <div class="marker" id="bmi-marker"></div>
+        <div class="bands" id="bmi-bands"></div>
+        <div class="ticks" id="bmi-ticks"></div>
+      </div>
+    </div>
+    <aside class="slip" aria-live="polite">
+      <div class="slip-label">Your BMI</div>
+      <div class="big" id="bmi-out">—</div>
+      <div id="bmi-cat"></div>
+      <dl class="rows">
+        <div><dt>Healthy weight for your height</dt><dd id="bmi-o-range">—</dd></div>
+        <div><dt id="bmi-l-gap">To reach the healthy range</dt><dd id="bmi-o-gap">—</dd></div>
+        <div><dt>BMI prime</dt><dd id="bmi-o-prime">—</dd></div>
+      </dl>
+      <p class="note">BMI is a screening number, not a diagnosis. It does not tell muscle from fat and is not meant for children or pregnancy.</p>
+    </aside>
+  </div>
+</section>
+
+  </main>
+</div>
+
+<footer class="credit">
+<p class="meta">Hisaab © <span id="credit-year">2026</span> · All calculations run in your browser · Visits counted with Google Analytics.</p>
+</footer>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ================= helpers ================= */
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const store = {
+    get(k) { try { return localStorage.getItem('hisaab.' + k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem('hisaab.' + k, v); } catch {} }
+  };
+  const nf = {};
+  const fmt = (n, d = 0, min = 0) => {
+    if (!isFinite(n)) return '—';
+    const key = d + ':' + min;
+    nf[key] = nf[key] || new Intl.NumberFormat('en-IN', { maximumFractionDigits: d, minimumFractionDigits: min });
+    return nf[key].format(n);
+  };
+  const rupee = (n, d = 0, min = 0) => !isFinite(n) ? '—' : (n < 0 ? '−₹' : '₹') + fmt(Math.abs(n), d, min);
+  const trimNum = x => String(+x.toFixed(2));
+  const shortWords = n => {
+    const a = Math.abs(n);
+    if (a >= 1e7) return trimNum(n / 1e7) + ' crore';
+    if (a >= 1e5) return trimNum(n / 1e5) + ' lakh';
+    if (a >= 1e3) return trimNum(n / 1e3) + ' thousand';
+    return fmt(n, 2);
+  };
+  const shortAxis = n => {
+    const a = Math.abs(n);
+    if (a >= 1e7) return trimNum(n / 1e7) + 'Cr';
+    if (a >= 1e5) return trimNum(n / 1e5) + 'L';
+    if (a >= 1e3) return trimNum(n / 1e3) + 'K';
+    return String(n);
+  };
+  const num = id => { const v = parseFloat($('#' + id).value); return isFinite(v) ? v : 0; };
+  const set = (id, t) => { const el = $('#' + id); if (el) el.textContent = t; };
+  const html = (id, h) => { const el = $('#' + id); if (el) el.innerHTML = h; };
+  const seg = name => { const b = $(`.seg[data-name="${name}"] button[aria-pressed="true"]`); return b ? b.dataset.v : null; };
+  const setSeg = (name, v) => $$(`.seg[data-name="${name}"] button`).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const rowsHTML = list => list.map(([k, v, cls]) => `<div${cls ? ` class="${cls}"` : ''}><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+  const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+
+  /* ================= analytics (never sends what people type into calculators) ================= */
+  const track = (name, params = {}) => {
+    try { if (typeof gtag === 'function') gtag('event', name, params); } catch {}
+  };
+  const usedTools = new Set();
+  const markUsed = id => {
+    if (!id || usedTools.has(id)) return;   // once per calculator per visit
+    usedTools.add(id);
+    track('calculation_done', { calculator: id });
+  };
+
+  const DAY = 864e5;
+  const pad2 = n => String(n).padStart(2, '0');
+  const todayISO = () => { const d = new Date(); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; };
+  // Date.UTC() treats years 0-99 as 1900-1999, so set the full year explicitly
+  const mkUTC = (y, m, d) => { const t = new Date(0); t.setUTCFullYear(y, m, d); t.setUTCHours(0, 0, 0, 0); return t; };
+  const parseISO = v => { if (!v) return null; const [y, m, d] = v.split('-').map(Number); if (!y || !m || !d) return null; const t = mkUTC(y, m - 1, d); return isNaN(t) ? null : t; };
+  const fmtDate = d => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+  const weekday = d => d.toLocaleDateString('en-IN', { weekday: 'long', timeZone: 'UTC' });
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const plural = (n, w) => `${fmt(n)} ${w}${n === 1 ? '' : 's'}`;
+
+  /* ================= shared controls ================= */
+  document.addEventListener('click', e => {
+    const sb = e.target.closest('.seg button');
+    if (sb) {
+      const segEl = sb.parentElement;
+      $$('button', segEl).forEach(b => b.setAttribute('aria-pressed', String(b === sb)));
+      segEl.dispatchEvent(new CustomEvent('segchange', { bubbles: true, detail: { name: segEl.dataset.name, v: sb.dataset.v } }));
+      return;
+    }
+    const cb = e.target.closest('.chips button');
+    if (cb) {
+      const input = $('#' + cb.parentElement.dataset.for);
+      input.value = cb.dataset.v;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      return;
+    }
+    const st = e.target.closest('[data-step]');
+    if (st) {
+      const input = $('#' + st.dataset.target);
+      const min = parseFloat(input.min) || 1, max = parseFloat(input.max) || 1e9;
+      input.value = clamp((parseFloat(input.value) || min) + Number(st.dataset.step), min, max);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  });
+
+  function syncChips(scope) {
+    $$('.chips[data-for]', scope).forEach(c => {
+      const v = parseFloat($('#' + c.dataset.for).value);
+      $$('button', c).forEach(b => b.setAttribute('aria-pressed', String(parseFloat(b.dataset.v) === v)));
+    });
+  }
+  function syncRanges(e) {
+    const t = e.target;
+    if (t.type === 'range' && t.dataset.link) { $('#' + t.dataset.link).value = t.value; }
+    else if (t.id) { const r = $(`input[type="range"][data-link="${t.id}"]`); if (r) r.value = t.value; }
+  }
+  function updateHints(scope) {
+    $$('[data-hint-for]', scope).forEach(h => {
+      const v = num(h.dataset.hintFor), inp = $('#' + h.dataset.hintFor);
+      h.textContent = v > 0 && v <= 1e15 && inp.getAttribute('aria-invalid') !== 'true' ? `${rupee(v)}  ·  ${shortWords(v)}` : '';
+    });
+  }
+
+  /* ================= EMI ================= */
+  let emiTimer, typing = false;
+  function calcEMI() {
+    const P = num('emi-p'), R = num('emi-r'), T = num('emi-n'), unit = seg('emi-unit');
+    const n = Math.round(unit === 'y' ? T * 12 : T), r = R / 1200;
+    if (P <= 0 || n <= 0 || R < 0 || n > 600) {
+      set('emi-out', '—'); set('emi-sub', 'Enter a loan amount, rate and tenure.'); html('emi-table', ''); return;
+    }
+    const f = Math.pow(1 + r, n);
+    const emi = r === 0 ? P / n : P * r * f / (f - 1);
+    const total = emi * n, interest = total - P;
+    set('emi-out', rupee(emi));
+    set('emi-sub', `for ${plural(n, 'month')} at ${fmt(R, 2)}% a year`);
+    set('emi-o-p', rupee(P)); set('emi-o-i', rupee(interest)); set('emi-o-t', rupee(total));
+    set('emi-o-ip', fmt(interest / P * 100, 1) + '%');
+    $('#emi-bar-p').style.width = (P / total * 100) + '%';
+    $('#emi-bar-i').style.width = (interest / total * 100) + '%';
+
+    const sv = $('#emi-start').value || todayISO().slice(0, 7);
+    let [sy, sm] = sv.split('-').map(Number); sm -= 1;
+    const monthLbl = k => { const t = sm + k; return `${MONTHS[((t % 12) + 12) % 12]} ${sy + Math.floor(t / 12)}`; };
+    set('emi-stamp', `LAST EMI · ${monthLbl(n - 1).toUpperCase()}`);
+
+    let bal = P; const rows = [];
+    for (let m = 1; m <= n; m++) {
+      const int = bal * r;
+      let prin = emi - int;
+      if (m === n) prin = bal;
+      bal = Math.max(0, bal - prin);
+      rows.push({ m, int, prin, bal });
+    }
+    const view = seg('emi-view');
+    set('emi-th-period', view === 'y' ? 'Year' : 'Month');
+    const bar = b => { const p = (P - b) / P * 100; return `${fmt(p, 0)}%<span class="minibar"><span style="width:${p}%"></span></span>`; };
+    let out = '';
+    if (view === 'y') {
+      for (let y = 0; y * 12 < n; y++) {
+        const chunk = rows.slice(y * 12, y * 12 + 12);
+        const pr = chunk.reduce((s, x) => s + x.prin, 0), it = chunk.reduce((s, x) => s + x.int, 0);
+        const end = chunk[chunk.length - 1];
+        out += `<tr><td>Year ${y + 1}<span class="per">${monthLbl(y * 12)} – ${monthLbl(end.m - 1)}</span></td><td>${rupee(pr)}</td><td>${rupee(it)}</td><td>${rupee(pr + it)}</td><td>${rupee(end.bal)}</td><td>${bar(end.bal)}</td></tr>`;
+      }
+    } else {
+      out = rows.map(x => `<tr><td>${x.m}. ${monthLbl(x.m - 1)}</td><td>${rupee(x.prin)}</td><td>${rupee(x.int)}</td><td>${rupee(x.prin + x.int)}</td><td>${rupee(x.bal)}</td><td>${bar(x.bal)}</td></tr>`).join('');
+    }
+    clearTimeout(emiTimer);
+    if (view === 'm' && typing) emiTimer = setTimeout(() => html('emi-table', out), 150);
+    else html('emi-table', out);
+  }
+  $('#t-emi').addEventListener('segchange', e => {
+    if (e.detail.name !== 'emi-unit') return;
+    const inp = $('#emi-n'), rng = $('#emi-n-r');
+    const v = num('emi-n');
+    if (e.detail.v === 'm') { inp.value = Math.round(v * 12); inp.max = 600; rng.min = 6; rng.max = 360; set('emi-n-suf', 'months'); }
+    else { inp.value = trimNum(v / 12); inp.max = 50; rng.min = 1; rng.max = 30; set('emi-n-suf', 'years'); }
+    rng.value = inp.value;
+  });
+
+  /* ================= SIP / FD ================= */
+  function niceStep(max, count = 4) {
+    const raw = max / count, mag = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / mag;
+    return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * mag;
+  }
+  function drawGrowth(host, rows) {
+    const W = Math.max(300, host.clientWidth || 600), H = 250, L = 52, R = 8, T = 12, B = 26;
+    const maxV = Math.max(1, ...rows.map(r => r.value));
+    const step = niceStep(maxV), top = step * Math.ceil(maxV / step);
+    if (!isFinite(top) || !(step > 0) || rows.length > 200) { host.innerHTML = ''; return; }
+    const y = v => T + (H - T - B) * (1 - v / top);
+    const band = (W - L - R) / rows.length, bw = Math.max(2, band * 0.64);
+    const every = Math.ceil(rows.length / Math.floor((W - L) / 34));
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Growth of the investment by year">`;
+    for (let v = 0; v <= top + 1e-6; v += step) {
+      s += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${shortAxis(v)}</text>`;
+    }
+    rows.forEach((r, i) => {
+      const x = L + i * band + (band - bw) / 2;
+      const inv = Math.min(r.invested, r.value), gain = Math.max(0, r.value - inv);
+      s += `<g><title>${r.label}: invested ${rupee(r.invested)}, value ${rupee(r.value)}</title>`;
+      s += `<rect class="b-inv" x="${x}" y="${y(inv)}" width="${bw}" height="${Math.max(0, y(0) - y(inv))}" rx="1.5"/>`;
+      if (gain > 0) s += `<rect class="b-gain" x="${x}" y="${y(inv + gain)}" width="${bw}" height="${Math.max(0, y(inv) - y(inv + gain))}" rx="1.5"/>`;
+      s += `</g>`;
+      if ((i + 1) % every === 0 || i === 0) s += `<text x="${x + bw / 2}" y="${H - 8}" text-anchor="middle">${r.label}</text>`;
+    });
+    host.innerHTML = s + '</svg>';
+  }
+  let lastSipRows = [];
+  function prepSIP() {
+    const mode = seg('sip-mode');
+    $('#sip-step-f').hidden = mode !== 'sip';
+    $('#sip-comp-f').hidden = mode !== 'fd';
+    set('sip-amt-lbl', mode === 'sip' ? 'Monthly investment' : mode === 'fd' ? 'Deposit amount' : 'One-time investment');
+    set('sip-rate-lbl', mode === 'fd' ? 'FD interest rate (per year)' : 'Expected return (per year)');
+    set('sip-note', mode === 'fd'
+      ? 'FD interest is taxable at your slab rate, and banks deduct TDS above the yearly limit. This shows the amount before tax.'
+      : 'Market returns are not guaranteed. This assumes a steady return every year.');
+  }
+  function calcSIP() {
+    const mode = seg('sip-mode');
+
+    const amt = num('sip-amt'), rate = num('sip-rate'), yrs = Math.round(num('sip-yrs')), stepUp = num('sip-step') / 100;
+    if (amt <= 0 || yrs <= 0 || yrs > 100) { set('sip-out', '—'); set('sip-sub', 'Enter an amount and time period.'); $('#sip-chart').innerHTML = ''; return; }
+    const rows = [];
+    let invested = 0, value = 0;
+    if (mode === 'sip') {
+      const i = rate / 1200;
+      for (let m = 1; m <= yrs * 12; m++) {
+        const inst = amt * Math.pow(1 + stepUp, Math.floor((m - 1) / 12));
+        invested += inst; value = (value + inst) * (1 + i);
+        if (m % 12 === 0) rows.push({ label: 'Y' + m / 12, invested, value });
+      }
+    } else if (mode === 'lump') {
+      invested = amt;
+      for (let yy = 1; yy <= yrs; yy++) rows.push({ label: 'Y' + yy, invested, value: amt * Math.pow(1 + rate / 100, yy) });
+      value = rows[rows.length - 1].value;
+    } else {
+      const k = Number(seg('fd-comp'));
+      invested = amt;
+      for (let yy = 1; yy <= yrs; yy++) rows.push({ label: 'Y' + yy, invested, value: amt * Math.pow(1 + rate / 100 / k, k * yy) });
+      value = rows[rows.length - 1].value;
+    }
+    if (!isFinite(value) || !isFinite(invested) || value > 1e15) { set('sip-out', '—'); set('sip-sub', 'The result is too large to show. Lower the rate or the period.'); $('#sip-chart').innerHTML = ''; return; }
+    const gain = value - invested;
+    set('sip-out', rupee(value));
+    set('sip-sub', `${shortWords(value)} after ${plural(yrs, 'year')}`);
+    set('sip-out-lbl', mode === 'fd' ? 'FD maturity amount' : 'Maturity value');
+    set('sip-o-inv', rupee(invested)); set('sip-o-ret', rupee(gain)); set('sip-o-tot', rupee(value));
+    set('sip-o-x', fmt(value / invested, 2) + '× your money');
+    $('#sip-bar-a').style.width = (invested / value * 100) + '%';
+    $('#sip-bar-b').style.width = (Math.max(0, gain) / value * 100) + '%';
+    lastSipRows = rows;
+    drawGrowth($('#sip-chart'), rows);
+  }
+
+  /* ================= INCOME TAX ================= */
+  const TAX_PRESETS = {
+    old: { std: 50000, rebateLimit: 500000, rebateMax: 12500, marginal: false, topSurcharge: 37,
+      slabs: [{ upto: 250000, rate: 0 }, { upto: 500000, rate: 5 }, { upto: 1000000, rate: 20 }, { upto: null, rate: 30 }] },
+    new: { std: 75000, rebateLimit: 1200000, rebateMax: 60000, marginal: true, topSurcharge: 25,
+      slabs: [{ upto: 400000, rate: 0 }, { upto: 800000, rate: 5 }, { upto: 1200000, rate: 10 }, { upto: 1600000, rate: 15 },
+        { upto: 2000000, rate: 20 }, { upto: 2400000, rate: 25 }, { upto: null, rate: 30 }] }
+  };
+  const OLD_AGE_SLABS = {
+    a: TAX_PRESETS.old.slabs,
+    b: [{ upto: 300000, rate: 0 }, { upto: 500000, rate: 5 }, { upto: 1000000, rate: 20 }, { upto: null, rate: 30 }],
+    c: [{ upto: 500000, rate: 0 }, { upto: 1000000, rate: 20 }, { upto: null, rate: 30 }]
+  };
+  const clone = o => JSON.parse(JSON.stringify(o));
+  let taxCfg;
+  try { taxCfg = JSON.parse(store.get('tax') || 'null'); } catch { taxCfg = null; }
+  const cfgOk = c => c && ['old', 'new'].every(r => {
+    const x = c[r], fin = v => typeof v === 'number' && isFinite(v) && v >= 0 && v <= 1e13;
+    if (!x || !fin(x.std) || !fin(x.rebateLimit) || !fin(x.rebateMax) || !Array.isArray(x.slabs) || x.slabs.length < 2) return false;
+    return x.slabs.every((sl, i) => fin(sl.rate) && sl.rate <= 100 &&
+      (i === x.slabs.length - 1 ? sl.upto == null : fin(sl.upto) && sl.upto > (i ? x.slabs[i - 1].upto : 0)));
+  });
+  if (!cfgOk(taxCfg)) taxCfg = clone(TAX_PRESETS);
+  const saveTax = () => { if (cfgOk(taxCfg)) store.set('tax', JSON.stringify(taxCfg)); };
+
+  const sortedSlabs = slabs => {
+    const s = slabs.filter(x => x.upto != null).sort((a, b) => a.upto - b.upto);
+    const last = slabs.find(x => x.upto == null) || { upto: null, rate: s.length ? s[s.length - 1].rate : 0 };
+    return [...s, last];
+  };
+  function slabTax(income, slabs) {
+    let prev = 0, tax = 0; const parts = [];
+    for (const s of sortedSlabs(slabs)) {
+      const cap = s.upto == null ? Infinity : s.upto;
+      const amt = Math.max(0, Math.min(income, cap) - prev);
+      const t = amt * (Number(s.rate) || 0) / 100;
+      parts.push({ from: prev, to: cap, rate: s.rate, amt, t });
+      tax += t; prev = cap;
+    }
+    return { tax, parts };
+  }
+  function surchargeRate(income, top) {
+    if (income > 5e7) return { rate: top, th: 5e7, lower: 25 };
+    if (income > 2e7) return { rate: 25, th: 2e7, lower: 15 };
+    if (income > 1e7) return { rate: 15, th: 1e7, lower: 10 };
+    if (income > 5e6) return { rate: 10, th: 5e6, lower: 0 };
+    return { rate: 0 };
+  }
+  function computeRegime(reg, inp) {
+    const cfg = taxCfg[reg];
+    const gross = inp.sal + inp.oth;
+    const std = inp.salaried ? Math.min(cfg.std, inp.sal) : 0;
+    const ded = reg === 'old'
+      ? Math.min(inp.c80, 150000) + inp.d80 + inp.hra + Math.min(inp.hl, 200000) + Math.min(inp.nps, 50000) + inp.od
+      : inp.enps;
+    const taxable = Math.round(Math.max(0, gross - std - ded) / 10) * 10;
+    const { tax: base, parts } = slabTax(taxable, cfg.slabs);
+    let rebate = 0;
+    if (taxable <= cfg.rebateLimit) rebate = Math.min(base, cfg.rebateMax);
+    else if (cfg.marginal) rebate = Math.max(0, base - (taxable - cfg.rebateLimit));
+    const afterRebate = base - rebate;
+    const sc = surchargeRate(taxable, cfg.topSurcharge);
+    let surcharge = afterRebate * sc.rate / 100;
+    if (sc.rate) {
+      const atTh = slabTax(sc.th, cfg.slabs).tax * (1 + sc.lower / 100);
+      const allowed = atTh + (taxable - sc.th);
+      if (afterRebate + surcharge > allowed) surcharge = Math.max(0, allowed - afterRebate);
+    }
+    const cess = (afterRebate + surcharge) * 0.04;
+    const total = Math.round(afterRebate + surcharge + cess);
+    return { gross, std, ded, taxable, base, parts, rebate, surcharge, scRate: sc.rate, cess, total };
+  }
+
+  function renderSlabs(reg) {
+    const s = taxCfg[reg].slabs;
+    html('slabs-' + reg, s.map((row, i) => {
+      const from = i === 0 ? 0 : s[i - 1].upto;
+      const last = i === s.length - 1;
+      return `<tr>
+        <td id="slab-${reg}-${i}-from">${from == null ? '—' : rupee(from)}</td>
+        <td>${last ? '<span class="note">and above</span>' : `<input class="upto" id="slab-${reg}-${i}-upto" data-reg="${reg}" data-i="${i}" data-k="upto" type="number" min="1" max="10000000000000" step="10000" value="${row.upto}" aria-label="Slab ${i + 1} upper limit">`}</td>
+        <td><div class="inwrap sm"><input id="slab-${reg}-${i}-rate" data-reg="${reg}" data-i="${i}" data-k="rate" type="number" min="0" max="100" step="0.5" value="${row.rate}" aria-label="Slab ${i + 1} rate"><span class="suf">%</span></div></td>
+        <td>${s.length > 2 ? `<button class="icon-btn" type="button" data-delslab="${reg}" data-i="${i}" aria-label="Remove slab ${i + 1}">×</button>` : ''}</td>
+      </tr>`;
+    }).join(''));
+    validateSlabs(reg);
+  }
+  function validateSlabs(reg) {
+    const s = taxCfg[reg].slabs;
+    let ok = true;
+    for (let i = 1; i < s.length - 1; i++) if (!(s[i].upto > s[i - 1].upto)) ok = false;
+    if (s.length > 1 && !(s[0].upto > 0)) ok = false;
+    const el = $('#slab-err-' + reg);
+    el.hidden = ok;
+    el.textContent = ok ? '' : 'Each "Up to" limit must be higher than the one above it. The tax is worked out with the limits sorted in order.';
+  }
+  function fillCfgInputs() {
+    $$('[data-cfg]').forEach(inp => {
+      const [reg, k] = inp.dataset.cfg.split('.');
+      if (inp.type === 'checkbox') inp.checked = !!taxCfg[reg][k]; else inp.value = taxCfg[reg][k];
+    });
+  }
+  const tax = $('#t-tax');
+  tax.addEventListener('input', e => {
+    const t = e.target;
+    if (t.dataset.reg && t.dataset.k) {
+      const reg = t.dataset.reg, i = +t.dataset.i, v = parseFloat(t.value);
+      taxCfg[reg].slabs[i][t.dataset.k] = isFinite(v) ? v : 0;
+      if (t.dataset.k === 'upto') { const nx = $(`#slab-${reg}-${i + 1}-from`); if (nx) nx.textContent = rupee(isFinite(v) ? v : 0); validateSlabs(reg); }
+      saveTax();
+    } else if (t.dataset.cfg) {
+      const [reg, k] = t.dataset.cfg.split('.');
+      taxCfg[reg][k] = t.type === 'checkbox' ? t.checked : (parseFloat(t.value) || 0);
+      saveTax();
+    }
+  });
+  tax.addEventListener('change', e => { if (e.target.dataset.k === 'upto') { const reg = e.target.dataset.reg; taxCfg[reg].slabs = sortedSlabs(taxCfg[reg].slabs); saveTax(); renderSlabs(reg); run('tax'); } });
+  tax.addEventListener('click', e => {
+    const add = e.target.closest('[data-addslab]'), del = e.target.closest('[data-delslab]');
+    if (add) {
+      const reg = add.dataset.addslab, s = taxCfg[reg].slabs;
+      const prevUp = s.length > 1 ? s[s.length - 2].upto : 0;
+      s.splice(s.length - 1, 0, { upto: (prevUp || 0) + 400000, rate: s[s.length - 1].rate });
+      saveTax(); renderSlabs(reg); run('tax');
+    } else if (del) {
+      const reg = del.dataset.delslab, s = taxCfg[reg].slabs;
+      s.splice(+del.dataset.i, 1);
+      s[s.length - 1].upto = null;
+      saveTax(); renderSlabs(reg); run('tax');
+    } else if (e.target.id === 'tax-reset') {
+      taxCfg = clone(TAX_PRESETS);
+      taxCfg.age = seg('tax-age');
+      taxCfg.old.slabs = clone(OLD_AGE_SLABS[taxCfg.age]);
+      saveTax(); renderSlabs('old'); renderSlabs('new'); fillCfgInputs(); run('tax');
+    }
+  });
+  tax.addEventListener('segchange', e => {
+    if (e.detail.name !== 'tax-age') return;
+    taxCfg.age = e.detail.v;
+    taxCfg.old.slabs = clone(OLD_AGE_SLABS[e.detail.v]);
+    saveTax(); renderSlabs('old');
+  });
+
+  function calcTax() {
+    const inp = {
+      sal: num('tax-sal'), oth: num('tax-oth'), salaried: $('#tax-salaried').checked,
+      c80: num('tax-80c'), d80: num('tax-80d'), hra: num('tax-hra'), hl: num('tax-hl'), nps: num('tax-nps'), od: num('tax-od'),
+      enps: num('tax-enps')
+    };
+    const o = computeRegime('old', inp), n = computeRegime('new', inp);
+    const eff = r => r.gross > 0 ? `Effective rate ${fmt(r.total / r.gross * 100, 2)}%` : '';
+    set('tax-o-old', rupee(o.total)); set('tax-o-new', rupee(n.total));
+    set('tax-o-old-eff', eff(o)); set('tax-o-new-eff', eff(n));
+    set('reg-old-tot', rupee(o.total)); set('reg-new-tot', rupee(n.total));
+    const diff = o.total - n.total;
+    const better = diff > 0 ? 'new' : diff < 0 ? 'old' : null;
+    $('#tax-cmp-old').classList.toggle('win', better === 'old');
+    $('#tax-cmp-new').classList.toggle('win', better === 'new');
+    $('#reg-old').classList.toggle('best', better === 'old');
+    $('#reg-new').classList.toggle('best', better === 'new');
+    html('tax-verdict', better
+      ? `<span class="pill good">${better === 'new' ? 'New' : 'Old'} regime saves ${rupee(Math.abs(diff))} a year</span>`
+      : `<span class="pill info">Both regimes cost the same</span>`);
+    const best = better === 'old' ? o : n;
+    set('tax-o-gross', rupee(o.gross));
+    set('tax-o-month', rupee(best.total / 12));
+    set('tax-o-inhand', rupee(o.gross - best.total));
+
+    const neg = v => v > 0 ? '−' + rupee(v) : rupee(0);
+    const detail = r => {
+      const slabRows = r.parts.filter(p => p.amt > 0).map(p =>
+        [`${p.to === Infinity ? 'Above ' + shortAxis(p.from) : shortAxis(p.from) + ' – ' + shortAxis(p.to)} @ ${fmt(p.rate, 2)}%`, rupee(p.t)]);
+      return rowsHTML([
+        ['Gross income', rupee(r.gross)],
+        ['Standard deduction', neg(r.std)],
+        ['Other deductions', neg(r.ded)],
+        ['Taxable income', rupee(r.taxable)],
+        ...slabRows,
+        ['Tax on slabs', rupee(r.base)],
+        ['Rebate u/s 87A', neg(r.rebate)],
+        [`Surcharge${r.scRate ? ` (${r.scRate}%)` : ''}`, rupee(r.surcharge)],
+        ['Health &amp; education cess (4%)', rupee(r.cess)],
+        ['Total tax', rupee(r.total), 'total']
+      ]);
+    };
+    html('calc-old', detail(o)); html('calc-new', detail(n));
+  }
+
+  /* ================= GST ================= */
+  function calcGST() {
+    const mode = seg('gst-mode'), amt = num('gst-amt'), rate = num('gst-rate'), inter = seg('gst-sup') === 'inter';
+    let net, gst;
+    if (mode === 'add') { net = amt; gst = amt * rate / 100; }
+    else { net = amt * 100 / (100 + rate); gst = amt - net; }
+    const gross = net + gst;
+    set('gst-out-lbl', mode === 'add' ? 'Total with GST' : 'Price without GST');
+    set('gst-out', rupee(mode === 'add' ? gross : net, 2));
+    set('gst-sub', `GST of ${rupee(gst, 2)} at ${fmt(rate, 2)}%`);
+    set('gst-o-net', rupee(net, 2, 2)); set('gst-o-tax', rupee(gst, 2, 2)); set('gst-o-gross', rupee(gross, 2, 2));
+    $('#gst-r-c').hidden = inter; $('#gst-r-s').hidden = inter; $('#gst-r-i').hidden = !inter;
+    set('gst-l-c', `CGST @ ${fmt(rate / 2, 3)}%`); set('gst-l-s', `SGST @ ${fmt(rate / 2, 3)}%`); set('gst-l-i', `IGST @ ${fmt(rate, 2)}%`);
+    set('gst-o-c', rupee(gst / 2, 2, 2)); set('gst-o-s', rupee(gst / 2, 2, 2)); set('gst-o-i', rupee(gst, 2, 2));
+  }
+
+  function prepGST() { set('gst-amt-lbl', seg('gst-mode') === 'add' ? 'Amount before GST' : 'Amount including GST'); }
+
+  /* ================= PERCENT ================= */
+  function calcPct() {
+    const mrp = num('dis-mrp'), p1 = clamp(num('dis-p1'), 0, 100), p2 = clamp(num('dis-p2'), 0, 100), tx = num('dis-tax');
+    const a1 = mrp * (1 - p1 / 100), a2 = a1 * (1 - p2 / 100), taxAmt = a2 * tx / 100, pay = a2 + taxAmt;
+    const save = mrp - a2, eff = mrp > 0 ? save / mrp * 100 : 0;
+    set('dis-out', rupee(pay, 2));
+    set('dis-sub', p2 > 0 ? `${fmt(p1, 2)}% + ${fmt(p2, 2)}% is ${fmt(eff, 2)}% off in total, not ${fmt(p1 + p2, 2)}%` : `${fmt(p1, 2)}% off the MRP`);
+    set('dis-o-mrp', rupee(mrp, 2)); set('dis-o-1', rupee(a1, 2)); set('dis-o-2', rupee(a2, 2));
+    set('dis-o-tax', rupee(taxAmt, 2)); set('dis-o-save', rupee(save, 2)); set('dis-o-eff', fmt(eff, 2) + '%');
+
+    const q = (id) => num(id);
+    set('q1-o', fmt(q('q1-a') * q('q1-b') / 100, 4));
+    set('q2-o', q('q2-b') ? fmt(q('q2-a') / q('q2-b') * 100, 4) + '%' : 'Whole can’t be 0');
+    if (q('q3-a')) {
+      const c = (q('q3-b') - q('q3-a')) / Math.abs(q('q3-a')) * 100;
+      set('q3-o', `${c >= 0 ? '+' : '−'}${fmt(Math.abs(c), 2)}% ${c >= 0 ? 'increase' : 'decrease'}`);
+    } else set('q3-o', 'Start value can’t be 0');
+    const b = q('q4-a'), pc = q('q4-b');
+    set('q4-o', `↑ ${fmt(b * (1 + pc / 100), 4)}   ↓ ${fmt(b * (1 - pc / 100), 4)}`);
+  }
+
+  /* ================= TIP ================= */
+  function calcTip() {
+    const bill = num('tip-bill'), pct = num('tip-pct'), n = Math.max(1, Math.round(num('tip-n'))), step = Number(seg('tip-round'));
+    const tip = bill * pct / 100, total = bill + tip, exact = total / n;
+    const each = step > 0 ? Math.ceil(exact / step - 1e-9) * step : exact;
+    const coll = each * n, extra = coll - total;
+    set('tip-out', rupee(each, step ? 0 : 2));
+    set('tip-sub', `${plural(n, 'person')}, ${fmt(pct, 2)}% tip`);
+    set('tip-o-bill', rupee(bill, 2)); set('tip-o-tip', rupee(tip, 2)); set('tip-o-tot', rupee(total, 2));
+    set('tip-o-exact', rupee(exact, 2)); set('tip-o-extra', rupee(extra, 2)); set('tip-o-coll', rupee(coll, 2));
+  }
+
+  /* ================= WORDS ================= */
+  const ONES = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+  const TENS = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  const two = n => n < 20 ? ONES[n] : TENS[Math.floor(n / 10)] + (n % 10 ? '-' + ONES[n % 10] : '');
+  const three = n => { const h = Math.floor(n / 100), r = n % 100; return [h ? ONES[h] + ' Hundred' : '', r ? two(r) : ''].filter(Boolean).join(' '); };
+  function indianWords(n) {
+    if (n === 0) return 'Zero';
+    const parts = [];
+    const crore = Math.floor(n / 1e7); n %= 1e7;
+    const lakh = Math.floor(n / 1e5); n %= 1e5;
+    const th = Math.floor(n / 1e3); n %= 1e3;
+    if (crore) parts.push(indianWords(crore) + ' Crore');
+    if (lakh) parts.push(two(lakh) + ' Lakh');
+    if (th) parts.push(two(th) + ' Thousand');
+    if (n) parts.push(three(n));
+    return parts.join(' ');
+  }
+  function intlWords(n) {
+    if (n === 0) return 'Zero';
+    const scale = ['', ' Thousand', ' Million', ' Billion', ' Trillion'];
+    const parts = []; let i = 0;
+    while (n > 0) { const c = n % 1000; if (c) parts.unshift(three(c) + scale[i]); n = Math.floor(n / 1000); i++; }
+    return parts.join(' ');
+  }
+  let lastWords = '';
+  function calcWords() {
+    const raw = $('#w-in').value.replace(/[,\s₹]/g, '');
+    const hint = $('#w-hint');
+    const bad = msg => { hint.textContent = msg; hint.className = 'hint err'; set('w-out', '—'); set('w-cheque', '—'); set('w-box', '₹ —'); set('w-o-in', '—'); set('w-o-intl', '—'); set('w-o-intlw', '—'); lastWords = ''; };
+    if (!raw) return bad('Type an amount, for example 125450.50');
+    const m = raw.match(/^(\d*)(?:\.(\d{0,2}))?$/);
+    if (!m || (m[1] === '' && !m[2])) return bad('Use digits only, with at most 2 digits after the decimal point.');
+    const intStr = (m[1] || '0').replace(/^0+(?=\d)/, '');
+    if (intStr.length > 15) return bad('That is more than 15 digits. Enter up to 99,99,99,99,99,99,999.');
+    hint.textContent = 'Up to 15 digits, with paise after the decimal point.'; hint.className = 'hint';
+    const rupees = Number(intStr), paise = m[2] ? Number(m[2].padEnd(2, '0')) : 0;
+    const style = seg('w-style'), cs = seg('w-case');
+    let words;
+    if (style === 'cheque') {
+      words = 'Rupees ' + indianWords(rupees) + (paise ? ' and ' + two(paise) + ' Paise' : '') + ' Only';
+      if (rupees === 0 && paise) words = two(paise) + ' Paise Only';
+    } else {
+      words = indianWords(rupees) + (paise ? ' Point ' + m[2].replace(/0+$/, '').split('').map(d => ONES[+d] || 'Zero').join(' ') : '');
+    }
+    const applyCase = s => cs === 'upper' ? s.toUpperCase() : cs === 'lower' ? s.toLowerCase() : s;
+    lastWords = applyCase(words);
+    set('w-out', lastWords);
+    const chequeText = indianWords(rupees) + (paise ? ' and ' + two(paise) + ' Paise' : '') + ' Only';
+    set('w-cheque', applyCase(chequeText));
+    const amtStr = fmt(rupees) + (paise ? '.' + pad2(paise) : '');
+    set('w-box', `₹ ${amtStr}${paise ? '' : '/-'}`);
+    set('w-o-in', '₹' + amtStr);
+    set('w-o-intl', '₹' + new Intl.NumberFormat('en-US').format(rupees) + (paise ? '.' + pad2(paise) : ''));
+    set('w-o-intlw', applyCase(intlWords(rupees) + (paise ? ' and ' + two(paise) + ' Paise' : '')));
+  }
+  $('#w-copy').addEventListener('click', () => {
+    if (!lastWords) return;
+    const done = msg => { set('w-copied', msg); setTimeout(() => set('w-copied', ''), 2200); };
+    const fallback = () => {
+      const r = document.createRange(); r.selectNodeContents($('#w-out'));
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      done('Selected. Press Ctrl+C to copy.');
+    };
+    try { navigator.clipboard.writeText(lastWords).then(() => { done('Copied'); track('words_copied'); }, fallback); } catch { fallback(); }
+  });
+  (() => {
+    const t = todayISO().split('-');
+    const digits = (t[2] + t[1] + t[0]).split('');
+    $('#w-date').innerHTML = digits.map(d => `<span>${d}</span>`).join('');
+  })();
+
+  /* ================= AGE & DATES ================= */
+  // Whole months first (a month later on the 31st clamps to the month's last day), then leftover days
+  function ymd(a, b) {
+    let months = (b.getUTCFullYear() - a.getUTCFullYear()) * 12 + b.getUTCMonth() - a.getUTCMonth();
+    if (addYM(a, 0, months) > b) months--;
+    const d = Math.round((b - addYM(a, 0, months)) / DAY);
+    return { y: Math.floor(months / 12), m: months % 12, d };
+  }
+  const ymdText = o => [o.y ? plural(o.y, 'year') : '', o.m ? plural(o.m, 'month') : '', o.d || (!o.y && !o.m) ? plural(o.d, 'day') : ''].filter(Boolean).join(', ');
+  function weekdaysBetween(a, b) {
+    const days = Math.round((b - a) / DAY);
+    let c = Math.floor(days / 7) * 5;
+    const sd = a.getUTCDay();
+    for (let i = 0; i < days % 7; i++) { const wd = (sd + i) % 7; if (wd !== 0 && wd !== 6) c++; }
+    return c;
+  }
+  function addYM(d, y, m) {
+    const first = mkUTC(d.getUTCFullYear() + y, d.getUTCMonth() + m, 1);
+    const dim = mkUTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0).getUTCDate();
+    return mkUTC(first.getUTCFullYear(), first.getUTCMonth(), Math.min(d.getUTCDate(), dim));
+  }
+  function prepAge() {
+    const mode = seg('age-mode');
+    $('#age-in-age').hidden = mode !== 'age';
+    $('#age-in-diff').hidden = mode !== 'diff';
+    $('#age-in-add').hidden = mode !== 'add';
+    set('age-out-lbl', { age: 'Age', diff: 'Time between', add: 'Resulting date' }[mode]);
+  }
+  function calcAge() {
+    const mode = seg('age-mode');
+    const fail = msg => { set('age-out', '—'); set('age-sub', msg); html('age-rows', ''); };
+
+    if (mode === 'age') {
+      const dob = parseISO($('#age-dob').value), on = parseISO($('#age-on').value);
+      if (!dob || !on) return fail('Pick a date of birth.');
+      if (dob > on) return fail('The date of birth is after the "age on" date.');
+      const a = ymd(dob, on), days = Math.round((on - dob) / DAY);
+      set('age-out', plural(a.y, 'year'));
+      set('age-sub', [a.m ? plural(a.m, 'month') : '', a.d ? plural(a.d, 'day') : ''].filter(Boolean).join(', ') || 'Exactly, to the day');
+      let nb = addYM(dob, a.y, 0);
+      if (nb < on) nb = addYM(dob, a.y + 1, 0);
+      const toNb = Math.round((nb - on) / DAY);
+      html('age-rows', rowsHTML([
+        ['Born on', `${weekday(dob)}`],
+        ['Total months', fmt(a.y * 12 + a.m)],
+        ['Total weeks', `${fmt(Math.floor(days / 7))} wk ${days % 7} d`],
+        ['Total days', fmt(days)],
+        ['Approx. hours', fmt(days * 24)],
+        ['Next birthday', toNb === 0 ? 'Today. Happy birthday!' : `${fmtDate(nb)} · in ${plural(toNb, 'day')}`, 'total']
+      ]));
+    } else if (mode === 'diff') {
+      let a = parseISO($('#dd-a').value), b = parseISO($('#dd-b').value);
+      if (!a || !b) return fail('Pick both dates.');
+      let swapped = false;
+      if (a > b) { [a, b] = [b, a]; swapped = true; }
+      const end = $('#dd-inc').checked ? new Date(b.getTime() + DAY) : b;
+      const o = ymd(a, end), days = Math.round((end - a) / DAY);
+      set('age-out', plural(days, 'day'));
+      set('age-sub', ymdText(o) + (swapped ? ' (dates were in reverse order)' : ''));
+      html('age-rows', rowsHTML([
+        ['From', `${fmtDate(a)}, ${weekday(a).slice(0, 3)}`],
+        ['To', `${fmtDate(b)}, ${weekday(b).slice(0, 3)}`],
+        ['In weeks', `${fmt(Math.floor(days / 7))} wk ${days % 7} d`],
+        ['Weekdays (Mon–Fri)', fmt(weekdaysBetween(a, end))],
+        ['Weekend days', fmt(days - weekdaysBetween(a, end))],
+        ['Years, months, days', ymdText(o), 'total']
+      ]));
+    } else {
+      const d = parseISO($('#ad-d').value);
+      if (!d) return fail('Pick a start date.');
+      const sg = Number(seg('ad-op'));
+      const Y = Math.round(num('ad-y')), M = Math.round(num('ad-m')), Wk = Math.round(num('ad-w')), Dd = Math.round(num('ad-dd'));
+      let r = addYM(d, sg * Y, sg * M);
+      r = new Date(r.getTime() + sg * (Wk * 7 + Dd) * DAY);
+      if (isNaN(r)) return fail('That date is out of range.');
+      set('age-out', fmtDate(r));
+      set('age-sub', weekday(r));
+      const gap = Math.round(Math.abs(r - d) / DAY);
+      html('age-rows', rowsHTML([
+        ['Start', `${fmtDate(d)}, ${weekday(d).slice(0, 3)}`],
+        [sg > 0 ? 'Added' : 'Subtracted', [Y && plural(Y, 'year'), M && plural(M, 'month'), Wk && plural(Wk, 'week'), Dd && plural(Dd, 'day')].filter(Boolean).join(', ') || 'Nothing'],
+        ['Calendar days apart', fmt(gap)],
+        ['Result', `${fmtDate(r)}, ${weekday(r)}`, 'total']
+      ]));
+    }
+  }
+
+  /* ================= UNITS ================= */
+  const UNITS = {
+    length: { def: ['ft', 'cm', 5.75], list: [
+      ['mm', 'Millimetre', 0.001], ['cm', 'Centimetre', 0.01], ['m', 'Metre', 1], ['km', 'Kilometre', 1000],
+      ['in', 'Inch', 0.0254], ['ft', 'Foot', 0.3048], ['yd', 'Yard', 0.9144], ['mi', 'Mile', 1609.344], ['nmi', 'Nautical mile', 1852]] },
+    weight: { def: ['kg', 'lb', 72], list: [
+      ['mg', 'Milligram', 1e-6], ['g', 'Gram', 0.001], ['kg', 'Kilogram', 1], ['q', 'Quintal', 100], ['t', 'Tonne', 1000],
+      ['oz', 'Ounce', 0.028349523125], ['lb', 'Pound', 0.45359237], ['st', 'Stone', 6.35029318], ['tola', 'Tola', 0.0116638038]] },
+    temp: { def: ['C', 'F', 37], list: [['C', 'Celsius'], ['F', 'Fahrenheit'], ['K', 'Kelvin']] },
+    area: { def: ['acre', 'gaj', 1], list: [
+      ['cm2', 'Square centimetre', 1e-4], ['m2', 'Square metre', 1], ['ft2', 'Square foot', 0.09290304], ['gaj', 'Square yard (gaj)', 0.83612736],
+      ['in2', 'Square inch', 0.00064516], ['cent', 'Cent', 40.468564224], ['guntha', 'Guntha', 101.17141056], ['acre', 'Acre', 4046.8564224],
+      ['ha', 'Hectare', 10000], ['km2', 'Square kilometre', 1e6], ['mi2', 'Square mile', 2589988.110336]] }
+  };
+  const toK = { C: v => v + 273.15, F: v => (v - 32) * 5 / 9 + 273.15, K: v => v };
+  const fromK = { C: k => k - 273.15, F: k => (k - 273.15) * 9 / 5 + 32, K: k => k };
+  const fmtU = v => {
+    if (!isFinite(v)) return '—';
+    const a = Math.abs(v);
+    if (a !== 0 && (a < 1e-4 || a >= 1e15)) return v.toExponential(4).replace('e', ' × 10^');
+    return fmt(v, a >= 1000 ? 2 : a >= 1 ? 4 : 6);
+  };
+  function fillUnitSelects(cat, keepVal) {
+    const c = UNITS[cat];
+    const opts = c.list.map(u => `<option value="${u[0]}">${esc(u[1])} (${u[0] === 'gaj' ? 'yd²' : u[0].replace('2', '²')})</option>`).join('');
+    $('#u-from').innerHTML = opts; $('#u-to').innerHTML = opts;
+    $('#u-from').value = c.def[0]; $('#u-to').value = c.def[1];
+    if (!keepVal) $('#u-val').value = c.def[2];
+  }
+  const unitLabel = (cat, k) => { const u = UNITS[cat].list.find(x => x[0] === k); return u ? u[1] : k; };
+  function convert(cat, v, from, to) {
+    if (cat === 'temp') return fromK[to](toK[from](v));
+    const f = UNITS[cat].list.find(x => x[0] === from)[2], t = UNITS[cat].list.find(x => x[0] === to)[2];
+    return v * f / t;
+  }
+  function calcUnit() {
+    const cat = seg('u-cat'), v = parseFloat($('#u-val').value), from = $('#u-from').value, to = $('#u-to').value;
+    if (!isFinite(v)) { set('u-out', '—'); set('u-sub', 'Enter a value.'); html('u-all', ''); return; }
+    const r = convert(cat, v, from, to);
+    set('u-out', `${fmtU(r)} ${to === 'gaj' ? 'gaj' : to.replace('2', '²')}`);
+    set('u-sub', `${fmtU(v)} ${unitLabel(cat, from).toLowerCase()} = ${fmtU(r)} ${unitLabel(cat, to).toLowerCase()}`);
+    if (cat === 'temp') {
+      const f = { 'C>F': '°F = °C × 9/5 + 32', 'F>C': '°C = (°F − 32) × 5/9', 'C>K': 'K = °C + 273.15', 'K>C': '°C = K − 273.15', 'F>K': 'K = (°F − 32) × 5/9 + 273.15', 'K>F': '°F = (K − 273.15) × 9/5 + 32' }[from + '>' + to] || 'Same unit';
+      set('u-formula', f);
+    } else {
+      set('u-formula', `× ${fmtU(convert(cat, 1, from, to))}`);
+    }
+    const notes = {
+      area: 'Gaj is the square yard used in property deals. Cent and guntha are common in South India. Bigha and kanal vary from state to state, so they are left out.',
+      weight: 'One tola is 11.6638 grams, the traditional unit for gold. A quintal is 100 kg.',
+      temp: 'Normal body temperature is about 37 °C, or 98.6 °F.',
+      length: ''
+    };
+    set('u-note', notes[cat]);
+    html('u-all', UNITS[cat].list.map(u => {
+      const val = convert(cat, v, from, u[0]);
+      return `<tr${u[0] === to ? ' style="font-weight:700"' : ''}><td>${esc(u[1])}</td><td>${fmtU(val)}</td></tr>`;
+    }).join(''));
+  }
+  $('#t-unit').addEventListener('segchange', e => { if (e.detail.name === 'u-cat') fillUnitSelects(e.detail.v); });
+  $('#u-swap').addEventListener('click', () => {
+    const f = $('#u-from').value; $('#u-from').value = $('#u-to').value; $('#u-to').value = f; run('unit'); markUsed('unit');
+  });
+
+  /* ================= BMI ================= */
+  const BMI_SCALES = {
+    asia: [[18.5, 'Underweight', 'warn', 'var(--warn)'], [23, 'Normal', 'good', 'var(--good)'], [25, 'Overweight', 'warn', 'var(--marigold)'], [Infinity, 'Obese', 'bad', 'var(--bad)']],
+    who: [[18.5, 'Underweight', 'warn', 'var(--warn)'], [25, 'Normal', 'good', 'var(--good)'], [30, 'Overweight', 'warn', 'var(--marigold)'], [Infinity, 'Obese', 'bad', 'var(--bad)']]
+  };
+  const GMIN = 12, GMAX = 40;
+  function prepBMI() {
+    const imp = seg('bmi-unit') === 'i';
+    $('#bmi-metric').hidden = imp; $('#bmi-imp').hidden = !imp;
+  }
+  function calcBMI() {
+    const imp = seg('bmi-unit') === 'i';
+    const hM = imp ? (num('bmi-ft') * 12 + num('bmi-in')) * 0.0254 : num('bmi-cm') / 100;
+    const kg = imp ? num('bmi-lb') * 0.45359237 : num('bmi-kg');
+    const sc = BMI_SCALES[seg('bmi-scale')];
+    let prev = GMIN;
+    $('#bmi-bands').innerHTML = sc.map(([up, , , col]) => {
+      const w = (Math.min(up, GMAX) - prev) / (GMAX - GMIN) * 100; prev = up; return `<span style="width:${w}%;background:${col}"></span>`;
+    }).join('');
+    $('#bmi-ticks').innerHTML = sc.slice(0, -1).map(([up]) => `<span style="left:${(up - GMIN) / (GMAX - GMIN) * 100}%">${up}</span>`).join('');
+    if (hM <= 0.5 || kg <= 0) { set('bmi-out', '—'); html('bmi-cat', ''); ['bmi-o-range', 'bmi-o-gap', 'bmi-o-prime'].forEach(i => set(i, '—')); return; }
+    const bmi = kg / (hM * hM);
+    const cat = sc.find(s => bmi < s[0]);
+    set('bmi-out', fmt(bmi, 1, 1));
+    html('bmi-cat', `<span class="pill ${cat[2]}">${cat[1]}</span>`);
+    $('#bmi-marker').style.left = clamp((bmi - GMIN) / (GMAX - GMIN) * 100, 0, 100) + '%';
+    const lo = 18.5 * hM * hM, hiBmi = sc[1][0], hi = hiBmi * hM * hM - 0.01;
+    const w = x => imp ? `${fmt(x / 0.45359237, 1, 1)} lb` : `${fmt(x, 1, 1)} kg`;
+    set('bmi-o-range', imp ? `${fmt(lo / 0.45359237, 1, 1)} – ${w(hi)}` : `${fmt(lo, 1, 1)} – ${w(hi)}`);
+    if (kg < lo) { set('bmi-l-gap', 'To reach the healthy range'); set('bmi-o-gap', 'Gain ' + w(lo - kg)); }
+    else if (kg > hi) { set('bmi-l-gap', 'To reach the healthy range'); set('bmi-o-gap', 'Lose ' + w(kg - hi)); }
+    else { set('bmi-l-gap', 'Healthy range'); set('bmi-o-gap', 'You are within it'); }
+    set('bmi-o-prime', fmt(bmi / (hiBmi), 2));
+  }
+
+  /* ================= router ================= */
+  const CALC = { emi: calcEMI, sip: calcSIP, tax: calcTax, gst: calcGST, pct: calcPct, tip: calcTip, words: calcWords, age: calcAge, unit: calcUnit, bmi: calcBMI };
+  let current = null;
+  const labelFor = i => {
+    const l = i.id && $(`label[for="${i.id}"]`);
+    if (l) return [...l.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim() || l.textContent.trim();
+    return i.getAttribute('aria-label') || 'This value';
+  };
+  function validate(sec) {
+    let msg = '';
+    $$('input[type="number"]', sec).forEach(i => {
+      if (!i.offsetParent) { i.removeAttribute('aria-invalid'); return; }
+      const raw = i.value.trim(), v = parseFloat(raw);
+      const min = i.min === '' ? -Infinity : parseFloat(i.min), max = i.max === '' ? Infinity : parseFloat(i.max);
+      const money = !!(i.closest('.inwrap') && i.closest('.inwrap').querySelector('.pre'));
+      const suf = i.closest('.inwrap') && i.closest('.inwrap').querySelector('.suf');
+      const show = x => (money ? '₹' : '') + fmt(x, 2) + (suf ? ' ' + suf.textContent.trim() : '');
+      let m = '';
+      if (i.validity.badInput || (raw !== '' && !isFinite(v))) m = `${labelFor(i)}: enter a number.`;
+      else if (raw !== '' && v < min) m = `${labelFor(i)} must be at least ${show(min)}.`;
+      else if (raw !== '' && v > max) m = `${labelFor(i)} must be at most ${show(max)}.`;
+      if (m) { i.setAttribute('aria-invalid', 'true'); if (!msg) msg = m; } else i.removeAttribute('aria-invalid');
+    });
+    return msg;
+  }
+  const PREP = { sip: prepSIP, age: prepAge, bmi: prepBMI, gst: prepGST };
+  function run(id) {
+    const sec = $('#t-' + id);
+    if (PREP[id]) PREP[id]();
+    const msg = validate(sec);
+    const errEl = $('.slip-err', sec);
+    if (msg) {
+      sec.setAttribute('data-error', '');
+      if (errEl) { errEl.textContent = msg; errEl.hidden = false; }
+      syncChips(sec); updateHints(sec);
+      return;
+    }
+    sec.removeAttribute('data-error');
+    if (errEl) errEl.hidden = true;
+    try { CALC[id](); } catch (err) { console.error(err); }
+    syncChips(sec); updateHints(sec);
+  }
+  function show(id) {
+    if (!CALC[id]) id = 'emi';
+    if (id !== current) track('calculator_open', { calculator: id });
+    current = id;
+    $$('.tool').forEach(s => { s.hidden = s.dataset.tool !== id; });
+    $$('.navbtn').forEach(b => b.setAttribute('aria-current', b.dataset.tool === id ? 'page' : 'false'));
+    store.set('tool', id);
+    try { history.replaceState(null, '', '#' + id); } catch {}
+    run(id);
+    const active = $(`.navbtn[data-tool="${id}"]`);
+    if (active && window.matchMedia('(max-width: 980px)').matches) active.scrollIntoView({ inline: 'center', block: 'nearest' });
+  }
+  $$('.navbtn').forEach(b => b.addEventListener('click', () => { show(b.dataset.tool); if (innerWidth < 980) $('main').scrollIntoView({ block: 'start' }); }));
+  const onEdit = e => { typing = e.type === 'input'; syncRanges(e); const sec = e.target.closest('.tool'); if (sec) { run(sec.dataset.tool); markUsed(sec.dataset.tool); } };
+  document.addEventListener('input', onEdit);
+  document.addEventListener('change', onEdit);
+  document.addEventListener('segchange', e => { typing = false; const sec = e.target.closest('.tool'); if (sec) { run(sec.dataset.tool); markUsed(sec.dataset.tool); } });
+  window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (CALC[h] && h !== current) show(h); });
+  let rT;
+  window.addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(() => { if (current === 'sip' && lastSipRows.length) drawGrowth($('#sip-chart'), lastSipRows); }, 120); });
+
+  // search
+  const search = $('#tool-search');
+  let searchT;
+  search.addEventListener('input', () => {
+    const q = search.value.trim().toLowerCase();
+    $$('.navbtn').forEach(b => { b.hidden = q && !(b.textContent.toLowerCase().includes(q) || b.dataset.k.includes(q)); });
+    clearTimeout(searchT);
+    // Searches that find nothing show which calculator to build next
+    if (q.length > 2 && $$('.navbtn').every(b => b.hidden)) {
+      searchT = setTimeout(() => track('search_no_result', { search_term: q.slice(0, 50) }), 1200);
+    }
+  });
+  search.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { const first = $$('.navbtn').find(b => !b.hidden); if (first) { show(first.dataset.tool); search.blur(); } }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); search.focus(); }
+  });
+
+  // theme
+  const themes = ['system', 'light', 'dark'];
+  let theme = store.get('theme') || 'system';
+  const applyTheme = () => {
+    if (theme === 'system') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', theme);
+    $('#theme-btn').textContent = 'Theme: ' + theme[0].toUpperCase() + theme.slice(1);
+  };
+  $('#theme-btn').addEventListener('click', () => { theme = themes[(themes.indexOf(theme) + 1) % 3]; store.set('theme', theme); applyTheme(); });
+  if (theme !== 'system') applyTheme(); else $('#theme-btn').textContent = 'Theme: System';
+
+  /* ================= init ================= */
+  set('credit-year', String(new Date().getFullYear()));
+  $$('.slip').forEach(sl => { const p = document.createElement('p'); p.className = 'slip-err'; p.setAttribute('role', 'alert'); p.hidden = true; sl.prepend(p); });
+  const today = todayISO();
+  $('#emi-start').value = today.slice(0, 7);
+  $('#age-on').value = today; $('#dd-a').value = today; $('#ad-d').value = today;
+  fillUnitSelects('length', true);
+  if (OLD_AGE_SLABS[taxCfg.age]) setSeg('tax-age', taxCfg.age);
+  fillCfgInputs(); renderSlabs('old'); renderSlabs('new');
+  const fromHash = location.hash.slice(1);
+  show(CALC[fromHash] ? fromHash : (store.get('tool') || 'emi'));
+})();
+</script>
+</body>
+</html>
+<script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="3ad3226a-2e93-4def-9b48-2a2a5eadfd58" data-app-host="app.netlify.com"></script>
